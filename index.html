@@ -103,10 +103,10 @@
   .core { position: absolute; inset: 34%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, var(--lav) 25%, #6C4CFF 60%, transparent 72%); filter: blur(6px); opacity: .55; animation: breathe 5s ease-in-out infinite; }
   @keyframes breathe { 50% { transform: scale(1.15); opacity: .8; } }
   .sat { position: absolute; left: 50%; top: 50%; width: 0; height: 0; animation: orbit 18s linear infinite; }
-  .sat.s2 { animation-delay: -9s; }
+
   @keyframes orbit { to { transform: rotate(360deg); } }
   .sat a { position: absolute; left: calc(min(340px, 82vw) / 2 - 44px); top: -44px; width: 88px; height: 88px; display: block; border-radius: 24px; overflow: hidden; box-shadow: 0 14px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .18), 0 0 40px var(--glow, rgba(139, 116, 255, .45)); animation: counter 18s linear infinite; transition: transform .3s var(--ease); }
-  .sat.s2 a { animation-delay: -9s; }
+
   @keyframes counter { to { transform: rotate(-360deg); } }
   .sat a img { width: 100%; height: 100%; object-fit: cover; }
   .sat a span { position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%); font-family: var(--font-en); font-size: 12px; font-weight: 800; letter-spacing: .06em; white-space: nowrap; color: var(--text); }
@@ -120,8 +120,8 @@
   /* ---------- Chapters ---------- */
   .chapter { position: relative; padding: 56px 0 88px; }
   .chapter::before { content: ""; position: absolute; inset: 0; background: radial-gradient(70% 50% at var(--gx, 70%) 40%, var(--tint) 0%, transparent 70%); opacity: .45; pointer-events: none; }
-  .chapter.miveliq { --tint: rgba(205, 184, 255, .30); --accent: #B79BFF; --accent2: #F5C77A; --gx: 72%; }
-  .chapter.lovow { --tint: rgba(143, 227, 208, .22); --accent: #8B74FF; --accent2: #8FE3D0; --gx: 28%; }
+  .chapter { --gx: 72%; }
+  .chapter.flip { --gx: 28%; }
   .grid { display: grid; gap: 22px; grid-template-areas: "head" "stage" "body"; }
   .grid > .head { grid-area: head; }
   .grid > .stage { grid-area: stage; margin: 6px 0 30px; }
@@ -130,7 +130,7 @@
     .grid { grid-template-columns: 1.05fr .95fr; grid-template-areas: "head stage" "body stage"; column-gap: 56px; row-gap: 0; align-items: end; }
     .grid > .body { align-self: start; }
     .grid > .stage { margin: 0; }
-    .chapter.lovow .grid { grid-template-columns: .95fr 1.05fr; grid-template-areas: "stage head" "stage body"; }
+    .chapter.flip .grid { grid-template-columns: .95fr 1.05fr; grid-template-areas: "stage head" "stage body"; }
   }
   .num { font-family: var(--font-en); font-weight: 800; font-size: clamp(64px, 16vw, 132px); line-height: .9; color: transparent; -webkit-text-stroke: 1.5px rgba(255, 255, 255, .22); letter-spacing: -.04em; margin: 0 0 4px; }
   .app-head { display: flex; align-items: center; gap: 16px; margin-top: 8px; }
@@ -164,8 +164,8 @@
   .dots i { width: 7px; height: 7px; border-radius: 99px; background: rgba(255, 255, 255, .25); transition: width .4s var(--ease), background .4s; }
   .dots i.on { width: 22px; background: var(--text); }
   .mascot { position: absolute; width: min(190px, 40vw); z-index: 4; filter: drop-shadow(0 16px 30px rgba(0, 0, 0, .45)); animation: float 5.5s ease-in-out infinite; }
-  .miveliq .mascot { right: max(0px, calc(50% - min(290px, 66vw) / 2 - 90px)); bottom: 6%; }
-  .lovow .mascot { left: max(0px, calc(50% - min(290px, 66vw) / 2 - 90px)); bottom: 8%; animation-delay: -2s; }
+  .chapter .mascot { right: max(0px, calc(50% - min(290px, 66vw) / 2 - 90px)); bottom: 6%; }
+  .chapter.flip .mascot { right: auto; left: max(0px, calc(50% - min(290px, 66vw) / 2 - 90px)); bottom: 8%; animation-delay: -2s; }
   @keyframes float { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-16px) rotate(3deg); } }
   .halo { position: absolute; width: 120%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, var(--tint) 0%, transparent 62%); filter: blur(10px); }
   .sparkle { position: absolute; width: 14px; height: 14px; background: radial-gradient(circle, #FFFFFF 0%, transparent 70%); border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
@@ -211,8 +211,7 @@
     <p class="lead" data-t="lead"></p>
     <div class="orbit" aria-hidden="true">
       <div class="ring"></div><div class="ring r2"></div><div class="core"></div>
-      <div class="sat s1"><a href="#miveliq" tabindex="-1" style="--glow: rgba(205,184,255,.55)"><img src="icons/miveliq.jpg" alt=""><span>Miveliq</span></a></div>
-      <div class="sat s2"><a href="#lovow" tabindex="-1" style="--glow: rgba(143,227,208,.45)"><img src="icons/lovow.jpg" alt=""><span>LOVOW</span></a></div>
+      <div id="sats"></div>
     </div>
     <a class="you-saw" id="you-saw" hidden></a>
     <a class="scroll-hint" href="#apps"><i></i><span data-t="scroll"></span></a>
@@ -230,43 +229,10 @@
 <script>
 (function () {
   // App Store の印 (どの SNS から来たか)。App Store Connect → アナリティクス → キャンペーンで、SNS ごとのダウンロード数がわかる
-  var PROVIDER = '128537158';
   var SOURCES = ['tiktok', 'instagram', 'youtube', 'x', 'threads'];
-
-  var APPS = [
-    {
-      id: 'miveliq', name: 'Miveliq', storeId: '6823613421', icon: 'icons/miveliq.jpg', mascot: 'assets/fogule.png',
-      screens: ['home', 'reward', 'journey'], support: 'https://tetra2585.github.io/miveliq/', glow: 'rgba(205,184,255,.45)',
-      ja: {
-        tagline: '顔トレでスマホ時間をコントロール',
-        desc: 'つい開いてしまうアプリに、やさしいロックを。笑顔キープなどの顔トレをクリアすると、少しの間だけ使えます。キャラクターのフォーグルが、毎日を応援します。',
-        feats: [['🙂', '笑顔キープ・ウインク・あいうお体操など、全17種目の顔トレ'], ['🔒', 'よく開くアプリを、時間帯ごとにロック'], ['📱', 'カメラの映像は iPhone の中だけで処理']],
-        price: '年額プランは7日間無料でお試しいただけます', mascotAlt: 'フォーグル'
-      },
-      en: {
-        tagline: 'Unlock apps with face workouts',
-        desc: 'Put a gentle lock on the apps you keep opening. Clear a quick face workout — like holding a smile — to use them for a little while, with Fogule cheering you on every day.',
-        feats: [['🙂', '17 face workouts: smile hold, winks, vowel shapes and more'], ['🔒', 'Lock the apps you overuse, on a schedule'], ['📱', 'Camera video stays on your iPhone']],
-        price: 'Try the yearly plan free for 7 days', mascotAlt: 'Fogule'
-      }
-    },
-    {
-      id: 'lovow', name: 'LOVOW', storeId: '6818636846', icon: 'icons/lovow.jpg', mascot: 'assets/fuwari.png',
-      screens: ['home', 'done', 'calendar'], support: 'https://tetra2585.github.io/lovow-legal/', glow: 'rgba(143,227,208,.38)',
-      ja: {
-        tagline: 'ふたりの約束アプリ',
-        desc: '大切に思っているのに、うまく伝わらない。LOVOW は、その気持ちを「小さな行動」に変えるアプリです。先に宣言して、できた瞬間を Memory として残せます。',
-        feats: [['💜', '「コーヒーを淹れる」など、相手のための小さな約束'], ['🎁', 'サプライズや、言えなかった「ありがとう」を届ける'], ['📅', 'ふたりの毎日が、カレンダーに積み重なる']],
-        price: '無料でダウンロード', mascotAlt: 'フワリ'
-      },
-      en: {
-        tagline: 'Love in little actions',
-        desc: 'You care about someone, but it doesn’t always come across. LOVOW turns that feeling into small, real actions: decide what you’ll do, do it, and keep the moment as a Memory.',
-        feats: [['💜', 'Small promises like “make them coffee”'], ['🎁', 'Surprises and the thank-yous you never said'], ['📅', 'Your days together, filling a calendar']],
-        price: 'Free download', mascotAlt: 'Fuwari'
-      }
-    }
-  ];
+  // アプリの一覧は apps.json (追加は scripts/add-app.py)
+  var PROVIDER = '';
+  var APPS = [];
 
   var TEXT = {
     ja: { eyebrow: 'INDIE APPS · iPhone', h1a: '毎日を、', h1b: 'ちょっとやさしく。', lead: 'ひとりで作っている iPhone アプリです。スマホとの付き合い方や、大切な人との毎日を、少しだけ良くするために。', scroll: 'スクロール', cta: 'App Store で見る', saw: '動画で見たのは {name} ↓', footer: 'iPhone 向けアプリ', support: '{name} のサポート' },
@@ -300,7 +266,7 @@
     var t = app[lang];
     var shots = app.screens.map(function (s, i) { return el('img', { src: 'assets/' + app.id + '-' + s + '-' + lang + '.jpg', alt: '', cls: i === 0 ? 'on' : '', loading: index === 0 ? 'eager' : 'lazy', decoding: 'async' }); });
     var dots = el('div', { cls: 'dots', 'aria-hidden': 'true' }, app.screens.map(function (_, i) { return el('i', { cls: i === 0 ? 'on' : '' }); }));
-    var phone = el('div', { cls: 'phone', style: '--glow:' + app.glow }, [el('div', { cls: 'screen' }, [el('div', { cls: 'island' })].concat(shots).concat([el('div', { cls: 'glare' })])), dots]);
+    var phone = el('div', { cls: 'phone', style: '--glow:' + (app.theme || {}).glow }, [el('div', { cls: 'screen' }, [el('div', { cls: 'island' })].concat(shots).concat([el('div', { cls: 'glare' })])), dots]);
     var sparkles = [0, 1, 2, 3, 4].map(function (i) {
       return el('i', { cls: 'sparkle', style: 'left:' + [12, 82, 20, 76, 50][i] + '%;top:' + [18, 26, 74, 70, 8][i] + '%;animation-delay:' + (i * 0.6) + 's' });
     });
@@ -325,7 +291,8 @@
       el('p', { cls: 'price reveal', style: '--d:.4s', text: t.price })
     ]);
 
-    var section = el('section', { cls: 'chapter ' + app.id, id: app.id, 'aria-label': app.name }, [el('div', { cls: 'wrap grid' }, [head, stage, copy])]);
+    var th = app.theme || {};
+    var section = el('section', { cls: 'chapter' + (index % 2 ? ' flip' : ''), id: app.id, 'aria-label': app.name, style: '--tint:' + th.tint + ';--accent:' + th.accent + ';--accent2:' + th.accent2 }, [el('div', { cls: 'wrap grid' }, [head, stage, copy])]);
 
     // 画面を数秒ごとに切り替える
     if (!reduceMotion) {
@@ -354,6 +321,14 @@
     var saw = document.getElementById('you-saw');
     var focused = APPS.filter(function (a) { return a.id === focus; })[0];
     if (focused) { saw.hidden = false; saw.href = '#' + focused.id; saw.textContent = fmt(TEXT[lang].saw, { name: focused.name }); } else { saw.hidden = true; }
+
+    var sats = document.getElementById('sats');
+    sats.textContent = '';
+    APPS.forEach(function (app, i) {
+      var delay = -(18 / APPS.length) * i + 's';
+      var a = el('a', { href: '#' + app.id, tabindex: '-1', style: '--glow:' + (app.theme || {}).glow + ';animation-delay:' + delay }, [el('img', { src: app.icon, alt: '' }), el('span', { text: app.name })]);
+      sats.appendChild(el('div', { cls: 'sat', style: 'animation-delay:' + delay }, [a]));
+    });
 
     var links = document.getElementById('links');
     links.textContent = '';
@@ -420,8 +395,13 @@
     b.addEventListener('click', function () { var l = b.getAttribute('data-lang'); try { localStorage.setItem('apps-lang', l); } catch (e) {} render(l); });
   });
 
+  // 見出しはすぐ出し、アプリは apps.json が届いてから並べる
   render(pickLanguage());
   stars();
+  fetch('apps.json', { cache: 'no-cache' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) { PROVIDER = data.provider; APPS = data.apps; render(pickLanguage()); })
+    .catch(function () { document.getElementById('apps').textContent = ''; });
   if (!reduceMotion) requestAnimationFrame(tilt); else document.getElementById('bar').classList.add('scrolled');
 })();
 </script>

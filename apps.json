@@ -1,0 +1,123 @@
+{
+  "provider": "128537158",
+  "apps": [
+    {
+      "id": "miveliq",
+      "name": "Miveliq",
+      "storeId": "6823613421",
+      "icon": "icons/miveliq.jpg",
+      "mascot": "assets/fogule.png",
+      "screens": [
+        "home",
+        "reward",
+        "journey"
+      ],
+      "support": "https://tetra2585.github.io/miveliq/",
+      "ja": {
+        "tagline": "顔トレでスマホ時間をコントロール",
+        "desc": "つい開いてしまうアプリに、やさしいロックを。笑顔キープなどの顔トレをクリアすると、少しの間だけ使えます。キャラクターのフォーグルが、毎日を応援します。",
+        "feats": [
+          [
+            "🙂",
+            "笑顔キープ・ウインク・あいうお体操など、全17種目の顔トレ"
+          ],
+          [
+            "🔒",
+            "よく開くアプリを、時間帯ごとにロック"
+          ],
+          [
+            "📱",
+            "カメラの映像は iPhone の中だけで処理"
+          ]
+        ],
+        "price": "年額プランは7日間無料でお試しいただけます",
+        "mascotAlt": "フォーグル"
+      },
+      "en": {
+        "tagline": "Unlock apps with face workouts",
+        "desc": "Put a gentle lock on the apps you keep opening. Clear a quick face workout — like holding a smile — to use them for a little while, with Fogule cheering you on every day.",
+        "feats": [
+          [
+            "🙂",
+            "17 face workouts: smile hold, winks, vowel shapes and more"
+          ],
+          [
+            "🔒",
+            "Lock the apps you overuse, on a schedule"
+          ],
+          [
+            "📱",
+            "Camera video stays on your iPhone"
+          ]
+        ],
+        "price": "Try the yearly plan free for 7 days",
+        "mascotAlt": "Fogule"
+      },
+      "theme": {
+        "glow": "rgba(205,184,255,.45)",
+        "tint": "rgba(205,184,255,.30)",
+        "accent": "#B79BFF",
+        "accent2": "#F5C77A"
+      }
+    },
+    {
+      "id": "lovow",
+      "name": "LOVOW",
+      "storeId": "6818636846",
+      "icon": "icons/lovow.jpg",
+      "mascot": "assets/fuwari.png",
+      "screens": [
+        "home",
+        "done",
+        "calendar"
+      ],
+      "support": "https://tetra2585.github.io/lovow-legal/",
+      "ja": {
+        "tagline": "ふたりの約束アプリ",
+        "desc": "大切に思っているのに、うまく伝わらない。LOVOW は、その気持ちを「小さな行動」に変えるアプリです。先に宣言して、できた瞬間を Memory として残せます。",
+        "feats": [
+          [
+            "💜",
+            "「コーヒーを淹れる」など、相手のための小さな約束"
+          ],
+          [
+            "🎁",
+            "サプライズや、言えなかった「ありがとう」を届ける"
+          ],
+          [
+            "📅",
+            "ふたりの毎日が、カレンダーに積み重なる"
+          ]
+        ],
+        "price": "無料でダウンロード",
+        "mascotAlt": "フワリ"
+      },
+      "en": {
+        "tagline": "Love in little actions",
+        "desc": "You care about someone, but it doesn’t always come across. LOVOW turns that feeling into small, real actions: decide what you’ll do, do it, and keep the moment as a Memory.",
+        "feats": [
+          [
+            "💜",
+            "Small promises like “make them coffee”"
+          ],
+          [
+            "🎁",
+            "Surprises and the thank-yous you never said"
+          ],
+          [
+            "📅",
+            "Your days together, filling a calendar"
+          ]
+        ],
+        "price": "Free download",
+        "mascotAlt": "Fuwari"
+      },
+      "theme": {
+        "glow": "rgba(143,227,208,.38)",
+        "tint": "rgba(143,227,208,.22)",
+        "accent": "#8B74FF",
+        "accent2": "#8FE3D0"
+      }
+    }
+  ]
+}
