@@ -14,6 +14,8 @@
 | YouTube（チャンネルのリンク） | https://tetra2585.github.io/apps/?src=youtube |
 | X | https://tetra2585.github.io/apps/?src=x |
 
+広告の誘導先には広告用の印を付ける（普段の投稿と分けて測るため）: `?src=igads`（Instagram 広告）、`fbads`（Facebook 広告）、`tiktokads`、`ytads`。Meta の広告は App Store のリンクを直接使えない（「アプリのインストール」が目的の広告だけ）ので、このページを誘導先にする。例: `https://tetra2585.github.io/apps/?src=igads&app=miveliq&lang=en`
+
 ほかのパラメータ: `?app=miveliq` でそのアプリを先頭に出し「動画で見たのは…」を表示、`?lang=ja|en` で言語を固定（なければ端末の言語。画面右上で切り替えも可）。
 
 ## ファイル

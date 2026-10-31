@@ -229,7 +229,8 @@
 <script>
 (function () {
   // App Store の印 (どの SNS から来たか)。App Store Connect → アナリティクス → キャンペーンで、SNS ごとのダウンロード数がわかる
-  var SOURCES = ['tiktok', 'instagram', 'youtube', 'x', 'threads'];
+  // *ads = paid ads (Meta can't link to the App Store directly, so its ads point here)
+  var SOURCES = ['tiktok', 'instagram', 'youtube', 'x', 'threads', 'igads', 'fbads', 'tiktokads', 'ytads'];
   // アプリの一覧は apps.json (追加は scripts/add-app.py)
   var PROVIDER = '';
   var APPS = [];
