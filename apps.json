@@ -118,6 +118,65 @@
         "accent": "#8B74FF",
         "accent2": "#8FE3D0"
       }
+    },
+    {
+      "id": "toviqu",
+      "name": "TOVIQU",
+      "storeId": "6826421277",
+      "ja": {
+        "tagline": "勤務中のスマホは、キツネが見張る",
+        "desc": "決めた勤務時間のあいだ、気が散るアプリを自動で封印。おすすめは「許可したアプリ以外を、すべて封印」。緊急時はいつでも待たずに解除でき、集中した時間はキツネの冒険のエネルギーになります。",
+        "feats": [
+          [
+            "🔒",
+            "勤務時間に合わせて、アプリを自動で封印"
+          ],
+          [
+            "🚨",
+            "緊急解除はいつでもすぐ。電話・緊急通報は制限されません"
+          ],
+          [
+            "🦊",
+            "集中した時間で、キツネの番人と冒険"
+          ]
+        ],
+        "price": "PRO は最初の1週間無料でお試しいただけます（対象の方のみ）。買い切りプランもあります",
+        "mascotAlt": "キツネの番人"
+      },
+      "en": {
+        "tagline": "A fox guards your phone at work",
+        "desc": "Distracting apps are sealed automatically during the work hours you set — or everything except the apps you allow. Emergency unlock is always instant, and your focus time powers the Fox Guardian's adventure.",
+        "feats": [
+          [
+            "🔒",
+            "Apps sealed automatically during your work hours"
+          ],
+          [
+            "🚨",
+            "Emergency unlock is always instant; calls are never blocked"
+          ],
+          [
+            "🦊",
+            "Turn focus time into an adventure with the Fox Guardian"
+          ]
+        ],
+        "price": "Try PRO free for 7 days (eligible users). A lifetime option is also available",
+        "mascotAlt": "the Fox Guardian"
+      },
+      "theme": {
+        "glow": "rgba(255,150,80,.42)",
+        "tint": "rgba(255,150,80,.26)",
+        "accent": "#FF9A4D",
+        "accent2": "#F5C77A"
+      },
+      "icon": "icons/toviqu.jpg",
+      "screens": [
+        "home",
+        "emergency",
+        "adventure"
+      ],
+      "support": "https://tetra2585.github.io/toviqu/support.html",
+      "mascot": "assets/toviqu-mascot.png"
     }
   ]
 }
