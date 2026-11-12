@@ -177,6 +177,65 @@
       ],
       "support": "https://tetra2585.github.io/toviqu/support.html",
       "mascot": "assets/toviqu-mascot.png"
+    },
+    {
+      "id": "pashlo",
+      "name": "PASHLO",
+      "storeId": "6829155970",
+      "ja": {
+        "tagline": "「はい、チーズ！」はアプリが言う",
+        "desc": "アプリが「はーい、チーズ！」と声をかけて、合図のすぐあとに自動でシャッター。撮る前後の動きも動画で残るので、写真になる瞬間までが1本の作品になります。撮影の舞台裏まで見せる「舞台裏」モードも。",
+        "feats": [
+          [
+            "📣",
+            "声の合図で、全員そろってからパシャ"
+          ],
+          [
+            "🎬",
+            "撮影の前後も動画で残して、1本の作品に"
+          ],
+          [
+            "📱",
+            "撮影・編集・保存は iPhone の中だけ"
+          ]
+        ],
+        "price": "撮影・編集・保存は無料。Pro の月額プランは7日間無料でお試しいただけます",
+        "mascotAlt": "バディ"
+      },
+      "en": {
+        "tagline": "The app says “Say cheese!”",
+        "desc": "PASHLO calls out “Say cheese!” and takes the photo right after the cue. It keeps the moments before and after the shot too, so every photo becomes a short clip — with a Behind the Scenes mode for the bloopers.",
+        "feats": [
+          [
+            "📣",
+            "A voice cue so everyone’s ready"
+          ],
+          [
+            "🎬",
+            "The moments before and after, in one clip"
+          ],
+          [
+            "📱",
+            "Shooting, editing and saving stay on your iPhone"
+          ]
+        ],
+        "price": "Shooting, editing and saving are included. Try Pro monthly free for 7 days",
+        "mascotAlt": "Buddy"
+      },
+      "theme": {
+        "glow": "rgba(255,201,74,.38)",
+        "tint": "rgba(255,201,74,.22)",
+        "accent": "#FFC94A",
+        "accent2": "#FF5DA2"
+      },
+      "icon": "icons/pashlo.jpg",
+      "screens": [
+        "work",
+        "camera",
+        "color"
+      ],
+      "support": "https://tetra2585.github.io/pashlo-legal/support/",
+      "mascot": "assets/pashlo-mascot.png"
     }
   ]
 }
