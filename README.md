@@ -37,8 +37,12 @@
 | `store` | App Store へのボタンを押した | `app`, `from` = theater / dock / quiz / list |
 | `quiz_open` / `quiz_result` | 診断を開いた / 結果が出た | `app`（結果のみ） |
 | `camera` | 最後の章で撮り方を選んだ | `kind` = live（カメラ）/ file（端末のカメラ・写真）/ none（カメラなし）/ denied（カメラを使えなかった） |
-| `photo` | 写真を開いた | `from` = pashlo / finale, `cast`（写ったキャラの数） |
-| `share` | シェアのボタンを押した | `kind` = quiz / photo |
+| `photo` | 写真を開いた | `from` = pashlo / finale, `cast`（写ったキャラの数）, `rare`（レアなら 1） |
+| `share` | シェアのボタンを押した | `kind` = quiz / photo / score / video |
+| `toss` | 回っているアイコンをはじいた | `app` |
+| `score` | ダンスのスコアをカードにした | `n`（ステップ数）, `rank`（0〜3） |
+| `ar` | AR を開いた | `kind` = stand（立つ）/ dance（踊る） |
+| `video` | ニコと踊る動画を録り終えた | `kind` = live（カメラあり）/ none（カメラなし） |
 | `voice` | ニコの声を再生した | |
 | `secret` | ひみつを見つけた | `key`, `n`（見つけた数） |
 | `follow` | SNS へのボタンを押した | `sns` |
@@ -64,6 +68,10 @@
 - **自己紹介**: ヒーローのすぐ下、アプリ一覧の前に「ニコって、誰？」の章。「声で聞く」を押すと、自己紹介動画の声（英語）に合わせてニコが話し、字幕が出る。文面は `index.html` の `aboutSay` / `aboutFacts` / `aboutSubs`
 - **隠しステージ**: タップするほどニコが踊る。ひみつは 4 つ（ニコを何度もタップ／ページを離れて戻る／踊らせる／4 つのアプリを全部触る）
 - **最後の章**: 「ニコと撮る」で、その時点で触ったアプリのキャラと写真を撮れる。カメラを起動すると、自分の隣にニコが写る（`camOpen`）。カメラを使えない端末では、端末のカメラか写真の選択に切り替わる。カメラなしでも撮れる。写真は端末の中で作り、どこにも送らない。その下に TikTok・YouTube・Instagram へのリンク（`index.html` の `#finale`）
+- **ステージのおまけ**: 10 回叩くと「スコアをカードにする」が出る（ステップ数、1 秒あたりの最高タップ数、称号。`drawScore`）。「ニコと踊る動画を撮る」は、踊るニコを 5 秒の縦動画（720x1280・音なし）にする。カメラを入れると自分の隣で踊る（`recOpen`。画面の canvas を MediaRecorder で録る。録画できないブラウザでは、その旨を出す）
+- **AR**: 「ニコを、部屋に立たせる。」の章（`#ar`）。iPhone / iPad の Safari でタップすると AR Quick Look が開き、実物大（160cm）のニコが床に立つ。立つ・踊るの 2 つ（`assets/niko/niko-ar.usdz` / `niko-ar-dance.usdz`）。USDZ はモデル側で作り（`~/project/Vmodel/tetra_teto/CLAUDE.md` の「AR 用 USDZ」）、`python3 scripts/build-niko.py --ar-only` で写してボタンの絵を作る。ほかの端末では押せなくして案内を出す
+- **写真のふち**: 曜日で紙の色とスタンプが変わる（`DAYS`）。20 回に 1 回、虹色に光るレアが出る（`?rare=1` で必ず出る）
+- **小さなしかけ**: どこをタップしても三角がはじける／回っているアイコンは指で横にはじける（壁で跳ねて軌道に戻る）／マウスやスマホの傾きで、星・輪・アイコン・ニコが違う速さでずれる（iPhone はフッターの「スマホを傾けて動かす」で許可してから）／時間で空の色が変わる（朝・昼・夕方・夜。`?sky=morning` などで試せる）
 - **見た目**: 色はニコに合わせて紺・水色・白（`:root` の変数）。アプリごとの色は、触れる iPhone の中だけで使う
 - 画像の作り直し: `python3 scripts/build-niko.py`（元の連番は `~/project/Vmodel/tetra_teto/renders` の `tetraniko_intro_v037`、声は `audio/tetraniko_intro.wav`。声の変換は macOS の `afconvert`。コマ番号や大きさを変えたら `index.html` の `NIKO` も合わせる）
 

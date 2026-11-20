@@ -14,7 +14,7 @@ import pathlib
 import shutil
 import subprocess
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "assets" / "niko"
@@ -107,11 +107,50 @@ def og(renders):
     print(f"og.jpg ({(OUT / 'og.jpg').stat().st_size // 1024} KB)")
 
 
+# AR (iPhone の AR Quick Look)。USDZ はモデル側で作る (tetra_teto/CLAUDE.md の「AR 用 USDZ」)。ここでは写して、ボタンの絵を作るだけ
+AR_FILES = {"tetra_niko_ar.usdz": "niko-ar.usdz", "tetra_niko_ar_dance.usdz": "niko-ar-dance.usdz"}
+AR_THUMBS = {"static_front.png": "ar-stand.webp", "dance60_front.png": "ar-dance.webp"}  # renders/ar/check の確認用レンダー (白地)
+AR_THUMB_SIZE = (480, 640)
+
+
+def ar(renders):
+    src = renders / "ar"
+    if not src.exists():
+        print(f"ar: {src} が無い。前のものを残す")
+        return
+    for a, b in AR_FILES.items():
+        if (src / a).exists():
+            shutil.copyfile(src / a, OUT / b)
+            print(f"{b} ({(OUT / b).stat().st_size // 1024} KB)")
+    w, h = AR_THUMB_SIZE
+    for a, b in AR_THUMBS.items():
+        if not (src / "check" / a).exists():
+            continue
+        im = Image.open(src / "check" / a).convert("RGB")
+        box = ImageChops.difference(im, Image.new("RGB", im.size, "#FFFFFF")).convert("L").point(lambda v: 255 if v > 12 else 0).getbbox()
+        k = min(w * 0.86 / (box[2] - box[0]), h * 0.9 / (box[3] - box[1]))
+        fig = im.crop(box).resize((round((box[2] - box[0]) * k), round((box[3] - box[1]) * k)), Image.LANCZOS)
+        page = Image.new("RGB", (w, h), "#FFFFFF")
+        page.paste(fig, ((w - fig.width) // 2, h - fig.height - round(h * 0.05)))
+        back = Image.new("RGB", (w, h))
+        d = ImageDraw.Draw(back)
+        for y in range(h):  # 上から下へ、淡い水色。白地のレンダーを乗算で重ねる
+            t = y / (h - 1)
+            d.line((0, y, w, y), fill=(round(238 - 34 * t), round(246 - 22 * t), round(255 - 6 * t)))
+        ImageChops.multiply(back, page).save(OUT / b, "WEBP", quality=82, method=6)
+        print(f"{b} ({(OUT / b).stat().st_size // 1024} KB)")
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--renders", type=pathlib.Path, default=DEFAULT_RENDERS)
-    renders = p.parse_args().renders
+    p.add_argument("--ar-only", action="store_true", help="AR のファイルだけ入れ直す")
+    args = p.parse_args()
+    renders = args.renders
     OUT.mkdir(parents=True, exist_ok=True)
+    if args.ar_only:
+        ar(renders)
+        return
 
     for name, n in FACES.items():
         cut(renders, n, FACE_BOX, FACE_SIZE).save(OUT / f"face-{name}.webp", "WEBP", quality=82, method=6)
@@ -129,6 +168,7 @@ def main():
     sheet(renders, TALK_FRAMES, TALK_BOX, TALK_SIZE, TALK_COLS, "talk.webp", 55)
     voice(renders)
     og(renders)
+    ar(renders)
 
 
 if __name__ == "__main__":

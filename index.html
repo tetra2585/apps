@@ -112,7 +112,7 @@
   .lead { margin: 0 auto; max-width: 30em; color: var(--sub); font-size: clamp(15px, 3.8vw, 18px); opacity: 0; animation: fade 1s .5s var(--ease) forwards; }
   @keyframes fade { to { opacity: 1; } }
 
-  .orbit { position: relative; width: min(340px, 82vw); height: min(340px, 82vw); margin: 16px auto 6px; opacity: 0; animation: fade 1.2s .7s var(--ease) forwards; }
+  .orbit { position: relative; width: min(340px, 82vw); height: min(340px, 82vw); margin: 12px auto 28px; opacity: 0; animation: fade 1.2s .7s var(--ease) forwards; }
   .ring { position: absolute; inset: 0; border-radius: 50%; border: 1px dashed rgba(255, 255, 255, .16); }
   .ring.r2 { inset: 16%; border-style: solid; border-color: rgba(255, 255, 255, .08); }
   .core { position: absolute; inset: 34%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, var(--lav) 25%, #2F6BFF 60%, transparent 72%); filter: blur(6px); opacity: .55; animation: breathe 5s ease-in-out infinite; }
@@ -120,7 +120,7 @@
   .sat { position: absolute; left: 50%; top: 50%; width: 0; height: 0; animation: orbit 18s linear infinite; }
 
   @keyframes orbit { to { transform: rotate(360deg); } }
-  .sat a { position: absolute; left: calc(min(340px, 82vw) / 2 - 44px); top: -44px; width: 88px; height: 88px; display: block; border-radius: 24px; overflow: hidden; box-shadow: 0 14px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .18), 0 0 40px var(--glow, rgba(79, 179, 255, .45)); animation: counter 18s linear infinite; transition: transform .3s var(--ease); }
+  .sat a { position: absolute; left: calc(min(340px, 82vw) / 2 - 88px); top: -44px; width: 88px; height: 88px; display: block; border-radius: 24px; overflow: hidden; box-shadow: 0 14px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .18), 0 0 40px var(--glow, rgba(79, 179, 255, .45)); animation: counter 18s linear infinite; transition: transform .3s var(--ease); }
 
   @keyframes counter { to { transform: rotate(-360deg); } }
   .sat a img { width: 100%; height: 100%; object-fit: cover; }
@@ -321,6 +321,45 @@
   .photo-note { margin: 10px 0 0; color: var(--sub); font-weight: 700; font-size: 14px; }
   .sheet .card-view.big { width: min(270px, 66vw); }
 
+  /* ---------- 追加のしかけ ---------- */
+  /* 傾き: 星・輪・アイコン・ニコを、違う速さでずらす (--px / --py は tilt() が入れる) */
+  #stars { inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); translate: calc(var(--px, 0) * -18px) calc(var(--py, 0) * -14px); }
+  .orbit { translate: calc(var(--px, 0) * 12px) calc(var(--py, 0) * 8px); }
+  .ring, .core { translate: calc(var(--px, 0) * -20px) calc(var(--py, 0) * -14px); }
+  /* タップで出る三角 */
+  .tap { position: fixed; z-index: 70; width: 46px; height: 42px; margin: -24px -23px; background: var(--niko); clip-path: polygon(50% 0, 100% 100%, 0 100%, 50% 0, 50% 20%, 17% 90%, 83% 90%, 50% 20%); pointer-events: none; }
+  /* はじけるアイコン: 縦のスクロールはそのまま、横にはじくと飛ぶ */
+  .sat a { touch-action: pan-y; -webkit-user-drag: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+  .sat.out a { opacity: 0; }
+  .fly { position: fixed; z-index: 26; left: 0; top: 0; width: 88px; height: 88px; border-radius: 24px; overflow: hidden; pointer-events: none; box-shadow: 0 18px 44px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .22), 0 0 44px var(--glow, rgba(79, 179, 255, .5)); will-change: transform; }
+  .fly img { width: 100%; height: 100%; object-fit: cover; }
+  /* ステージの下のボタン、ダンス動画 */
+  .ghost[hidden] { display: none; }
+  .sheet .cta[hidden] { display: none; }
+  .stage-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 16px auto 0; max-width: 420px; }
+  .stage-acts .ghost { flex: 1 1 170px; box-sizing: border-box; padding: 0 14px; }
+  .stage-acts .ghost.main { border-color: rgba(79, 179, 255, .6); }
+  .rec { position: relative; width: min(236px, 58vw); aspect-ratio: 9 / 16; margin: 0 auto; border-radius: 18px; overflow: hidden; background: #0B1330; box-shadow: 0 16px 40px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .16); touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .rec canvas, .rec video.out { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .rec video.src { position: absolute; left: 0; top: 0; width: 2px; height: 2px; opacity: 0; pointer-events: none; }
+  .rec-bar { position: absolute; left: 0; bottom: 0; height: 6px; width: 0; background: var(--niko); }
+  .rec-bar.on { width: 100%; transition: width 5s linear; }
+  .rec-msg { margin: 10px 0 0; min-height: 1.4em; color: var(--sub); font-weight: 700; font-size: 13.5px; }
+
+  /* AR: iPhone の AR Quick Look を開く (a rel="ar" の中は img 1 つだけにする決まり) */
+  .ar-row { display: flex; justify-content: center; gap: 14px; margin: 20px auto 0; max-width: 420px; }
+  .ar-tile { position: relative; flex: 1; max-width: 190px; margin: 0; }
+  .ar-tile a { display: block; border-radius: 22px; overflow: hidden; box-shadow: 0 16px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .2), 0 0 40px rgba(79, 179, 255, .3); transition: transform .25s var(--ease); -webkit-tap-highlight-color: transparent; }
+  .ar-tile a:active { transform: scale(.97); }
+  .ar-tile a:focus-visible { outline: 2px solid var(--niko); outline-offset: 3px; }
+  .ar-tile img { width: 100%; height: auto; }
+  .ar-tile::before { content: "AR"; position: absolute; z-index: 1; left: 10px; top: 10px; padding: 1px 10px; border-radius: 999px; background: #06121F; color: #FFFFFF; font-family: var(--font-en); font-weight: 800; font-size: 12px; letter-spacing: .14em; pointer-events: none; }
+  .ar-tile figcaption { margin-top: 10px; font-weight: 800; font-size: 14.5px; }
+  .ar-off { margin: 12px auto 0; max-width: 26em; color: var(--faint); font-size: 12.5px; }
+  #ar-off { color: var(--sub); font-weight: 700; font-size: 13.5px; }
+  #ar.off .ar-tile a { pointer-events: none; filter: saturate(.5) brightness(.75); }
+  #ar.off #ar-size { display: none; }
+
   /* ---------- Reveal ---------- */
   .reveal { opacity: 0; transform: translateY(36px); filter: blur(8px); transition: opacity 1s var(--ease), transform 1s var(--ease), filter 1s var(--ease); transition-delay: var(--d, 0s); }
   .reveal.in { opacity: 1; transform: none; filter: none; }
@@ -402,6 +441,15 @@
 
   .wash { position: absolute; inset: 0; background: radial-gradient(90% 60% at 50% 40%, var(--wash, transparent) 0%, transparent 70%); opacity: 0; transition: opacity 1.2s; }
   .wash.on { opacity: .5; }
+  /* 時間で変わる空 (朝・昼・夕方。夜は元のまま)。?sky=morning などで試せる */
+  html[data-sky="morning"] .sky { background: radial-gradient(120% 80% at 50% -10%, #3F86D0 0%, #10244F 50%, var(--bg-deep) 100%); }
+  html[data-sky="morning"] .b2 { background: radial-gradient(circle, #FFD9A8 0%, transparent 62%); opacity: .42; }
+  html[data-sky="morning"] .b3 { background: radial-gradient(circle, #A8F0E0 0%, transparent 60%); opacity: .3; }
+  html[data-sky="day"] .sky { background: radial-gradient(120% 80% at 50% -10%, #2B6BD0 0%, #0D1E48 52%, var(--bg-deep) 100%); }
+  html[data-sky="day"] .b2 { background: radial-gradient(circle, #8FD4FF 0%, transparent 62%); opacity: .5; }
+  html[data-sky="evening"] .sky { background: radial-gradient(120% 80% at 50% -10%, #7A3F8E 0%, #1B1238 52%, var(--bg-deep) 100%); }
+  html[data-sky="evening"] .b1 { background: radial-gradient(circle, #FF8A5C 0%, transparent 65%); opacity: .45; }
+  html[data-sky="evening"] .b2 { background: radial-gradient(circle, #FF6FA8 0%, transparent 62%); opacity: .36; }
   html.niko-mode .sky { background: radial-gradient(120% 80% at 50% -10%, #2A5FC4 0%, #0B1836 55%, var(--bg-deep) 100%); }
   html.niko-mode .b1 { background: radial-gradient(circle, #4FB3FF 0%, transparent 65%); opacity: .7; }
   html.niko-mode .b2 { background: radial-gradient(circle, #BFE6FF 0%, transparent 62%); opacity: .55; }
@@ -412,7 +460,8 @@
   .who { display: grid; gap: 4px; justify-items: center; margin: 14px auto 0; max-width: 520px; }
   .who-fig { position: relative; width: min(290px, 76vw); }
   .who-fig::before { content: ""; position: absolute; inset: 4% 2% 4%; border-radius: 50%; background: radial-gradient(circle, rgba(79, 179, 255, .5), rgba(79, 179, 255, .2) 48%, transparent 70%); filter: blur(12px); }
-  .who-fig canvas { position: relative; display: block; width: 100%; aspect-ratio: 256 / 270; -webkit-mask-image: linear-gradient(#000 80%, transparent); mask-image: linear-gradient(#000 80%, transparent); }
+  /* 連番の切り出しはニコが左に 8% 寄っている (右は手を振る場所)。そのぶん右へ送って真ん中に立たせる */
+  .who-fig canvas { position: relative; left: 8%; display: block; width: 100%; aspect-ratio: 256 / 270; -webkit-mask-image: linear-gradient(#000 80%, transparent); mask-image: linear-gradient(#000 80%, transparent); }
   .who-sub { position: absolute; left: 50%; bottom: 4%; transform: translateX(-50%); width: max-content; max-width: 90vw; margin: 0; padding: 8px 14px; border-radius: 14px; background: rgba(8, 8, 22, .86); border: 1px solid rgba(79, 179, 255, .55); font-weight: 800; font-size: 15px; line-height: 1.45; white-space: pre-line; opacity: 0; transition: opacity .2s; pointer-events: none; }
   .who-sub.on { opacity: 1; }
   .who-card { box-sizing: border-box; width: 100%; padding: 18px 18px 16px; border-radius: 24px; background: var(--glass); border: 1px solid var(--line); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); text-align: left; }
@@ -544,6 +593,22 @@
     <p class="note reveal" style="--d:.12s" data-t="stageNote"></p>
     <div class="floor" id="floor" role="button" tabindex="0" aria-label="Dance"><canvas id="dance" width="230" height="455"></canvas></div>
     <p class="combo"><b id="steps">0</b>STEPS</p>
+    <div class="stage-acts">
+      <button type="button" class="ghost main" id="rec-btn" data-t="recBtn"></button>
+      <button type="button" class="ghost" id="score-btn" data-t="scoreBtn" hidden></button>
+    </div>
+  </section>
+
+  <section class="band" id="ar">
+    <p class="kicker reveal">NIKO IN YOUR ROOM</p>
+    <h2 class="reveal" style="--d:.06s" data-t="arTitle"></h2>
+    <p class="note reveal" style="--d:.12s" data-t="arNote"></p>
+    <div class="ar-row reveal" style="--d:.16s">
+      <figure class="ar-tile"><a rel="ar" href="assets/niko/niko-ar.usdz" data-ar="stand"><img src="assets/niko/ar-stand.webp" alt="Tetra Niko in AR, standing" width="480" height="640" loading="lazy"></a><figcaption data-t="arStand"></figcaption></figure>
+      <figure class="ar-tile"><a rel="ar" href="assets/niko/niko-ar-dance.usdz" data-ar="dance"><img src="assets/niko/ar-dance.webp" alt="Tetra Niko in AR, dancing" width="480" height="640" loading="lazy"></a><figcaption data-t="arDance"></figcaption></figure>
+    </div>
+    <p class="ar-off" id="ar-size" data-t="arSize"></p>
+    <p class="ar-off" id="ar-off" data-t="arOff" hidden></p>
   </section>
 
   <section class="band" id="finale">
@@ -603,6 +668,10 @@
   var TEXT = {
     ja: { eyebrow: 'INDIE APPS · iPhone', h1a: 'ここからは、', h1b: 'ニコが案内する。', lead: '毎日を、ちょっとやさしくする iPhone アプリ。ひとりで作っています。', scroll: 'スクロール', cta: 'App Store で見る', saw: '動画で見たのは {name} ↓', footer: 'iPhone 向けアプリ', support: '{name} のサポート',
       pick: 'ニコに選んでもらう', pickTitle: 'どれにするか、迷う？', pickNote: '3つ答えるだけ。ニコが、あなたに合うアプリを選ぶ。', stageTitle: 'タップで、踊る。', stageNote: 'ニコをタップ。速く叩くほど、速く踊る。',
+      arTitle: 'ニコを、部屋に立たせる。', arNote: 'カメラ越しに、実物大のニコが床に立つ。身長は160cm。', arStand: '立たせる', arDance: '踊らせる', arSize: 'タップすると AR が開く。読み込みは 8〜10MB。', arOff: 'AR は、iPhone か iPad の Safari で開くと使える。',
+      recBtn: 'ニコと踊る動画を撮る', scoreBtn: 'スコアをカードにする',
+      score: { title: 'いいステップ。', card: 'ニコを踊らせた', best: '最高 {n} タップ/秒', ranks: ['ウォームアップ', 'ノってきた', 'フロアの主役', '伝説のチャールストン'], note: 'もっと叩くと、称号が上がる。', top: 'いちばん上の称号。…やるね。', share: 'スコアをシェア', shareText: 'テトラニコを {n} ステップ踊らせた' },
+      rec: { title: 'ニコと踊る？', note: '画面をタップすると速く踊る。音は入らない。動画はこの端末の中で作り、どこにも送らない。', cam: 'カメラを入れる', go: '録画する（5秒）', going: '録画中…', wait: 'カメラの準備中…', done: '撮れた。', share: '動画をシェア・保存', again: 'もう一度撮る', noRec: 'このブラウザでは録画できない。Safari で開くと撮れる。', camFail: 'カメラを使えなかった。カメラなしでも録れる。', shareText: 'テトラニコと踊った' },
       aboutTitle: 'ニコって、誰？', aboutSay: 'テトラニコ。tetra2585 の公式ナビゲーター。\n個人開発のアプリを、短く、実際の画面で、要点だけ案内してる。',
       aboutFacts: [['名前', 'テトラニコ / Tetra Niko'], ['役目', 'アプリの案内役'], ['色', '水色 #4FB3FF'], ['特技', 'チャールストン'], ['活動', 'ショート動画でアプリ紹介']],
       voice: '声で聞く（英語・17秒）', voiceStop: '止める', voiceLoad: '準備中…',
@@ -613,14 +682,14 @@
         lovow: { hint: '約束を1つ選んで、「できた」を押して。', done: '…そういうの、ちゃんと残るんだよ。', title: '今日の約束', promises: ['コーヒーを淹れる', '「ありがとう」を言う', '花を買って帰る'], declared: '宣言した', did: 'できた', memory: 'Memory に残った' },
         pashlo: { hint: '何もしなくていい。アプリが声をかける。', done: '撮れた。写真、タップして見て。', ready: 'はーい、', cheese: 'チーズ！', open: '写真を見る', again: 'もう一度撮る' }
       },
-      photo: { title: '撮れた。', cheese: 'はい、チーズ！', card: 'テトラニコと撮った1枚', more: 'アプリをあと{n}つ触ると、全員そろう。', full: '全員そろった。', share: '写真をシェア', close: '閉じる', shareText: 'テトラニコと写真を撮った', camTitle: 'ニコと並んで撮る？', camNote: '写真はこの端末の中で作る。どこにも送らない。', camStart: 'カメラを起動', camSkip: 'カメラなしで撮る', camShoot: '撮る', camWait: 'カメラの準備中…', camFail: 'カメラを使えなかった。下のボタンから、端末のカメラで撮れる。', camFile: 'カメラで撮る・写真を選ぶ' },
+      photo: { rareTitle: 'レアが出た。', rareNote: '20回に1回の、光る1枚。', title: '撮れた。', cheese: 'はい、チーズ！', card: 'テトラニコと撮った1枚', more: 'アプリをあと{n}つ触ると、全員そろう。', full: '全員そろった。', share: '写真をシェア', close: '閉じる', shareText: 'テトラニコと写真を撮った', camTitle: 'ニコと並んで撮る？', camNote: '写真はこの端末の中で作る。どこにも送らない。', camStart: 'カメラを起動', camSkip: 'カメラなしで撮る', camShoot: '撮る', camWait: 'カメラの準備中…', camFail: 'カメラを使えなかった。下のボタンから、端末のカメラで撮れる。', camFile: 'カメラで撮る・写真を選ぶ' },
       finaleTitle: '最後に、1枚撮って帰る？', finaleNote: '触ったアプリのキャラも、いっしょに写る。', shoot: 'ニコと撮る', follow: 'つづきは、動画で。',
       again: 'もう一度やる',
       secrets: 'ひみつ', gyro: 'スマホを傾けて動かす', get: '{name} を見る',
       niko: {
         peek: '…地味すぎ。ちょっと貸して。',
         from: { tiktok: 'TikTok から来てくれたの？ ようこそ。', instagram: 'Instagram から来てくれたの？ ようこそ。', youtube: 'YouTube から来てくれたの？ ようこそ。', x: 'X から来てくれたの？ ようこそ。', threads: 'Threads から来てくれたの？ ようこそ。', share: '誰かに教えてもらったの？ いい友だちだね。' },
-        hello: 'テトラニコ。ここの案内役。よろしく。', night: 'こんな時間まで起きてるの？ …まあ、ニコもだけど。', morning: 'おはよう。朝から来てくれたんだ。', again: 'また来てくれたんだ。…ちょっとうれしい。',
+        hello: 'テトラニコ。ここの案内役。よろしく。', evening: 'こんばんは。空、いまの時間の色にしておいた。', toss: '投げないで。…もう1回やっていいけど。', night: 'こんな時間まで起きてるの？ …まあ、ニコもだけど。', morning: 'おはよう。朝から来てくれたんだ。', again: 'また来てくれたんだ。…ちょっとうれしい。',
         focus: '動画で見たのは {name} だよね。いちばん上に置いといた。', app: '{name}。{tagline}。', cta: '気になったら、入れてみて。合わなかったら消せばいいし。',
         pokes: ['ん、なに？', '…くすぐったい。', 'そこ、頭。', 'もう。数えてるからね。', '5回目。しつこい。', '…あと1回で怒るよ。'], poked: 'はい、ひみつ1つ目。よく粘ったね。', pokeMore: 'もう出ないよ。…たぶん。',
         about: 'ニコのこと、知りたい？ 声も聞けるよ。', introduced: '…あらためて、よろしく。',
@@ -639,6 +708,10 @@
       } },
     en: { eyebrow: 'INDIE APPS · iPhone', h1a: 'From here,', h1b: 'Niko is your guide.', lead: 'Small iPhone apps for kinder days, made by one indie developer.', scroll: 'Scroll', cta: 'View on the App Store', saw: 'The app from the video: {name} ↓', footer: 'Apps for iPhone', support: '{name} support',
       pick: 'Let Niko pick for you', pickTitle: "Can't decide?", pickNote: 'Three questions. Niko picks the app that fits you.', stageTitle: 'Tap to dance.', stageNote: 'Tap Niko. The faster you tap, the faster she dances.',
+      arTitle: 'Put Niko in your room.', arNote: 'Through your camera, a life-size Niko stands on your floor. She is 160 cm tall.', arStand: 'Stand', arDance: 'Dance', arSize: 'Tap to open AR. Loads 8–10 MB.', arOff: 'AR works in Safari on iPhone or iPad.',
+      recBtn: 'Record a dance with Niko', scoreBtn: 'Make a score card',
+      score: { title: 'Nice steps.', card: 'I made Niko dance', best: 'Best: {n} taps/sec', ranks: ['Warming up', 'In the groove', 'Star of the floor', 'Charleston legend'], note: 'Tap more to rank up.', top: 'Top rank. …Not bad.', share: 'Share score', shareText: 'I made Tetra Niko dance {n} steps' },
+      rec: { title: 'Dance with Niko?', note: 'Tap the screen to speed her up. No sound. The video is made on this device and never uploaded.', cam: 'Add camera', go: 'Record (5 sec)', going: 'Recording…', wait: 'Starting camera…', done: 'Got it.', share: 'Share / save video', again: 'Record again', noRec: "This browser can't record. Open in Safari to record.", camFail: "Couldn't use the camera. You can still record without it.", shareText: 'I danced with Tetra Niko' },
       aboutTitle: 'Who is Niko?', aboutSay: "I'm Tetra Niko, the official guide for tetra2585.\nI show you indie apps: short, real screens, no fluff.",
       aboutFacts: [['Name', 'Tetra Niko'], ['Role', 'App guide'], ['Color', 'Light blue #4FB3FF'], ['Skill', 'The Charleston'], ['Work', 'App intros in short videos']],
       voice: 'Hear my voice (17s)', voiceStop: 'Stop', voiceLoad: 'Loading…',
@@ -649,14 +722,14 @@
         lovow: { hint: 'Pick a promise, then press “Done”.', done: '…Things like that stay with you.', title: "Today's promise", promises: ['Make the coffee', 'Say “thank you”', 'Bring home flowers'], declared: 'Promised', did: 'Done', memory: 'Saved as a Memory' },
         pashlo: { hint: 'Do nothing. The app calls it.', done: 'Got it. Tap the photo.', ready: 'Ready…', cheese: 'Say cheese!', open: 'See the photo', again: 'Shoot again' }
       },
-      photo: { title: 'Got it.', cheese: 'Say cheese!', card: 'A photo with Tetra Niko', more: 'Touch {n} more and everyone shows up.', full: 'Everyone made it.', share: 'Share photo', close: 'Close', shareText: 'I took a photo with Tetra Niko', camTitle: 'Take one next to Niko?', camNote: 'The photo is made on this device. Nothing is uploaded.', camStart: 'Start camera', camSkip: 'Shoot without camera', camShoot: 'Shoot', camWait: 'Starting camera…', camFail: "Couldn't use the camera. Use the button below to take one with your device camera.", camFile: 'Take or choose a photo' },
+      photo: { rareTitle: 'A rare one.', rareNote: 'One in twenty. It shines.', title: 'Got it.', cheese: 'Say cheese!', card: 'A photo with Tetra Niko', more: 'Touch {n} more and everyone shows up.', full: 'Everyone made it.', share: 'Share photo', close: 'Close', shareText: 'I took a photo with Tetra Niko', camTitle: 'Take one next to Niko?', camNote: 'The photo is made on this device. Nothing is uploaded.', camStart: 'Start camera', camSkip: 'Shoot without camera', camShoot: 'Shoot', camWait: 'Starting camera…', camFail: "Couldn't use the camera. Use the button below to take one with your device camera.", camFile: 'Take or choose a photo' },
       finaleTitle: 'One photo before you go?', finaleNote: 'The characters from the apps you touched join in.', shoot: 'Take a photo with Niko', follow: 'More in the videos.',
       again: 'Try again',
       secrets: 'Secrets', gyro: 'Tilt your phone to move things', get: 'View {name}',
       niko: {
         peek: '…Too plain. Give me that.',
         from: { tiktok: 'You came from TikTok? Welcome.', instagram: 'You came from Instagram? Welcome.', youtube: 'You came from YouTube? Welcome.', x: 'You came from X? Welcome.', threads: 'You came from Threads? Welcome.', share: 'A friend sent you? Good friend.' },
-        hello: "I'm Tetra Niko, your guide here.", night: 'Still up this late? …Well, so am I.', morning: 'Morning. You came by early.', again: "You're back. …I'm a little glad.",
+        hello: "I'm Tetra Niko, your guide here.", evening: 'Good evening. I set the sky to match the hour.', toss: "Don't throw them. …Okay, one more time.", night: 'Still up this late? …Well, so am I.', morning: 'Morning. You came by early.', again: "You're back. …I'm a little glad.",
         focus: 'You saw {name} in the video, right? I put it on top.', app: '{name}. {tagline}.', cta: "Curious? Try it. You can always delete it.",
         pokes: ['Hm? What?', '…That tickles.', "That's my head.", "I'm counting, you know.", 'Five. Persistent.', '…One more and I get mad.'], poked: 'Fine. Secret number one. You earned it.', pokeMore: 'Nothing else comes out. …Probably.',
         about: 'Want to know about me? You can hear my voice too.', introduced: '…So. Nice to meet you.',
@@ -711,7 +784,7 @@
   // どこまで読まれたか (章が画面に入ったら 1 回だけ)
   if ('IntersectionObserver' in window) {
     var reachIO = new IntersectionObserver(function (es) { es.forEach(function (x) { if (x.isIntersecting) { reachIO.unobserve(x.target); track('reach', { section: x.target.id }); } }); }, { rootMargin: '-30% 0px' });
-    ['about', 'apps', 'stage', 'finale'].forEach(function (id) { var n = document.getElementById(id); if (n) reachIO.observe(n); });
+    ['about', 'apps', 'stage', 'ar', 'finale'].forEach(function (id) { var n = document.getElementById(id); if (n) reachIO.observe(n); });
   }
 
   function storeUrl(app) { return 'https://apps.apple.com/app/apple-store/id' + app.storeId + '?pt=' + PROVIDER + '&ct=' + campaign + '&mt=8'; }
@@ -820,9 +893,15 @@
 
   // 電話の傾き: 指やマウスの位置と、スクロールに合わせる
   var pointer = { x: 0, y: 0 }; var tiltOn = false;
+  var par = { x: 0, y: 0, sx: 9, sy: 9 }, parNodes = null;   // なめらかにした傾き。星・輪・アイコンをずらす
   window.addEventListener('pointermove', function (e) { if (tiltOn) return; pointer.x = e.clientX / window.innerWidth - 0.5; pointer.y = e.clientY / window.innerHeight - 0.5; }, { passive: true });
   function tilt() {
     var vh = window.innerHeight;
+    par.x += (pointer.x - par.x) * 0.09; par.y += (pointer.y - par.y) * 0.09;
+    if (!reduceMotion && Math.abs(par.x - par.sx) + Math.abs(par.y - par.sy) > 0.003) {
+      par.sx = par.x; par.sy = par.y; parNodes = parNodes || [document.querySelector('.sky'), document.querySelector('.hero')];
+      parNodes.forEach(function (n) { n.style.setProperty('--px', par.x.toFixed(3)); n.style.setProperty('--py', par.y.toFixed(3)); });
+    }
     phones.forEach(function (p, i) {
       var r = p.stage.getBoundingClientRect();
       var c = (r.top + r.height / 2 - vh / 2) / vh; // -1 .. 1
@@ -878,6 +957,9 @@
   var T = function () { return TEXT[document.documentElement.lang] || TEXT.en; };
   var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
   var live = false;        // 開幕が終わってから喋る
+  // 時間で変わる空 (CSS の html[data-sky])
+  var SKY = (location.search.match(/[?&]sky=(morning|day|evening|night)/) || [])[1] || (function (h) { return h < 5 ? 'night' : h < 10 ? 'morning' : h < 16 ? 'day' : h < 19 ? 'evening' : 'night'; })(new Date().getHours());
+  document.documentElement.setAttribute('data-sky', SKY);
   var current = null;      // いま見ている章のアプリ
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = src; return i; }
   function load(src) { return new Promise(function (ok, ng) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = ng; i.src = src; }); }
@@ -928,7 +1010,7 @@
     var o = heroBox.getBoundingClientRect(), f = dockFace.getBoundingClientRect();
     var dx = (f.left + f.width / 2) - (o.left + o.width * 0.49), dy = (f.top + f.height / 2) - (o.top + o.height * 0.248);
     var scale = 1 + (f.width * 2.04 / o.width - 1) * e;
-    heroCv.style.transform = 'translate3d(' + (dx * e + pointer.x * 14 * (1 - e)).toFixed(1) + 'px,' + (dy * e + pointer.y * 8 * (1 - e)).toFixed(1) + 'px,0) scale(' + scale.toFixed(3) + ')';
+    heroCv.style.transform = 'translate3d(' + (dx * e + par.x * 16 * (1 - e)).toFixed(1) + 'px,' + (dy * e + par.y * 10 * (1 - e)).toFixed(1) + 'px,0) scale(' + scale.toFixed(3) + ')';
     heroCv.style.opacity = p > 0.88 ? ((1 - p) / 0.12).toFixed(2) : '1';
   }
 
@@ -958,6 +1040,72 @@
     if (found.length >= SECRETS.length) setTimeout(function () { say(T().niko.all, 'happy', 9000, true); burst(window.innerWidth / 2, window.innerHeight / 2, 40); }, 4200);
     return true;
   }
+  // どこをタップしても、三角がはじける
+  document.addEventListener('pointerdown', function (e) {
+    if (reduceMotion || !document.body.animate || document.documentElement.classList.contains('intro')) return;
+    if (e.target.closest && e.target.closest('#floor, #niko, #dock-face, .sat')) return;   // ここは自分で散らす
+    burst(e.clientX, e.clientY, 5);
+    var t = el('i', { cls: 'tap', style: 'left:' + e.clientX + 'px;top:' + e.clientY + 'px' }); document.body.appendChild(t);
+    t.animate([{ transform: 'scale(.3) rotate(0deg)', opacity: .9 }, { transform: 'scale(1.7) rotate(' + (Math.random() < 0.5 ? -40 : 40) + 'deg)', opacity: 0 }], { duration: 520, easing: 'cubic-bezier(.2,.8,.2,1)' }).onfinish = function () { t.remove(); };
+  }, { passive: true });
+  // 回っているアイコンは、指ではじける。壁で跳ねて、しばらくすると軌道に戻る
+  (function () {
+    var sats = $('sats'), drag = null, block = 0, told = false;
+    if (reduceMotion) return;
+    sats.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    sats.addEventListener('click', function (e) { if (Date.now() - block < 500) e.preventDefault(); }, true);
+    sats.addEventListener('pointerdown', function (e) {
+      var a = e.target.closest && e.target.closest('.sat a');
+      if (!a || drag || a.parentNode.classList.contains('out')) return;
+      drag = { a: a, id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), vx: 0, vy: 0, node: null, px: 0, py: 0, ox: 0, oy: 0 };
+    });
+    window.addEventListener('pointermove', function (e) {
+      var d = drag; if (!d || e.pointerId !== d.id) return;
+      if (!d.node) {
+        if (Math.abs(e.clientX - d.x) + Math.abs(e.clientY - d.y) < 8) return;
+        var r = d.a.getBoundingClientRect();
+        d.ox = e.clientX - (r.left + r.width / 2) + 44; d.oy = e.clientY - (r.top + r.height / 2) + 44;
+        d.node = el('div', { cls: 'fly', style: '--glow:' + d.a.style.getPropertyValue('--glow') }, [el('img', { src: d.a.querySelector('img').src, alt: '' })]);
+        document.body.appendChild(d.node); d.a.parentNode.classList.add('out');
+      }
+      var now = performance.now(), dt = Math.max(4, now - d.t);
+      d.vx = d.vx * 0.4 + (e.clientX - d.x) / dt * 16 * 0.6; d.vy = d.vy * 0.4 + (e.clientY - d.y) / dt * 16 * 0.6;
+      d.x = e.clientX; d.y = e.clientY; d.t = now; d.px = d.x - d.ox; d.py = d.y - d.oy;
+      d.node.style.transform = 'translate3d(' + d.px.toFixed(1) + 'px,' + d.py.toFixed(1) + 'px,0) scale(1.1)';
+    }, { passive: true });
+    function home(d, x, y, rot) {      // 回っている元の場所へ帰る
+      var t0 = performance.now();
+      (function step(t) {
+        var r = d.a.getBoundingClientRect(), tx = r.left + r.width / 2 - 44, ty = r.top + r.height / 2 - 44;
+        x += (tx - x) * 0.2; y += (ty - y) * 0.2; rot *= 0.8;
+        d.node.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) rotate(' + rot.toFixed(1) + 'deg)';
+        if (t - t0 > 700 || Math.abs(tx - x) + Math.abs(ty - y) < 1.5) { d.node.remove(); d.a.parentNode.classList.remove('out'); return; }
+        requestAnimationFrame(step);
+      })(t0);
+    }
+    function end(e) {
+      var d = drag; if (!d || (e && e.pointerId !== d.id)) return;
+      drag = null; if (!d.node) return;
+      block = Date.now();
+      var x = d.px, y = d.py, rot = 0;
+      if (e && e.type === 'pointercancel') return home(d, x, y, rot);
+      var lim = function (v) { return Math.max(-46, Math.min(46, v)); }, vx = lim(d.vx), vy = lim(d.vy), vr = vx * 0.7, t0 = performance.now(), last = t0;
+      track('toss', { app: (d.a.getAttribute('href') || '').slice(1) });
+      if (!told) { told = true; setTimeout(function () { say(T().niko.toss, 'hmph', 5000); }, 500); }
+      (function step(t) {
+        var k = Math.min(3, (t - last) / 16.7); last = t;
+        var W = window.innerWidth - 88, H = window.innerHeight - 88, hit = 0;
+        vy += 0.55 * k; vx *= Math.pow(0.992, k); x += vx * k; y += vy * k; rot += vr * k;
+        if (x < 0) { x = 0; hit = Math.abs(vx); vx = -vx * 0.8; vr = -vr * 0.6; } else if (x > W) { x = W; hit = Math.abs(vx); vx = -vx * 0.8; vr = -vr * 0.6; }
+        if (y < 0) { y = 0; hit = Math.max(hit, Math.abs(vy)); vy = -vy * 0.8; } else if (y > H) { y = H; hit = Math.max(hit, Math.abs(vy)); vy = -vy * 0.72; vx *= 0.94; vr = vx * 0.7; }
+        if (hit > 5) burst(x + 44, y + 44, 3);
+        d.node.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) rotate(' + rot.toFixed(1) + 'deg)';
+        if (t - t0 > 2400 || document.hidden) return home(d, x, y, rot % 360);
+        requestAnimationFrame(step);
+      })(t0);
+    }
+    window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
+  })();
   var pokes = 0;
   function poke(e) {
     var t = e.currentTarget; t.classList.remove('poke'); void t.offsetWidth; t.classList.add('poke');
@@ -1258,7 +1406,7 @@
         demoDone(it, 'wink');
         drawPhoto({ lang: document.documentElement.lang, cast: who }).then(function (blob) {
           if (my !== run) return;
-          PHOTO = { blob: blob, url: URL.createObjectURL(blob), cast: who.length, of: TH.items.filter(function (x) { return x.demo; }).length };
+          PHOTO = { blob: blob, url: URL.createObjectURL(blob), cast: who.length, of: TH.items.filter(function (x) { return x.demo; }).length, rare: lastRare };
           thumbImg.src = PHOTO.url; thumb.hidden = false; after.hidden = false; call.textContent = '';
         }).catch(function () { after.hidden = false; open.hidden = true; });
       }, 2700));
@@ -1338,7 +1486,7 @@
   function greet(from) {
     live = true; wave(from);
     var n = T().niko, h = new Date().getHours(), again = store.get('niko-seen');
-    var first = n.from[src] || (again ? n.again : h < 5 ? n.night : h < 11 ? n.morning : n.hello);
+    var first = n.from[src] || (again ? n.again : h < 5 ? n.night : SKY === 'morning' ? n.morning : SKY === 'day' ? n.hello : n.evening);
     store.set('niko-seen', '1');
     say(first, 'smile', 7000);
     var focused = APPS.filter(function (a) { return a.id === focus; })[0];
@@ -1433,26 +1581,31 @@
     });
   }
   // PASHLO で撮れた写真を大きく見せる (診断と同じ窓を使う)
+  // カードを見せる窓 (写真・スコア)
+  function cardOpen(btn, o) {
+    lastFocus = btn; quiz.hidden = false; document.body.style.overflow = 'hidden'; dock.style.visibility = 'hidden';
+    $('quiz-kicker').textContent = o.kicker; quizFaceSet(o.face || 'wink');
+    quizBody.textContent = '';
+    var share = el('button', { type: 'button', cls: 'ghost', text: o.share }), close = el('button', { type: 'button', cls: 'ghost', text: T().photo.close });
+    [el('h2', { id: 'quiz-title', text: o.title }), el('img', { cls: 'card-view big', src: o.url, alt: o.alt }), el('p', { cls: 'photo-note', text: o.note }), el('div', { cls: 'row' }, [share, close]), el('p', { cls: 'card-hint', text: T().quiz.hint })].forEach(function (n) { quizBody.appendChild(n); });
+    close.addEventListener('click', quizClose);
+    share.addEventListener('click', function () { track('share', o.track); shareCard(o.blob, o.file, o.text, location.origin + location.pathname + '?src=share', function () {}); });
+    $('quiz-x').focus();
+  }
   function photoOpen(btn) {
     if (!PHOTO) return;
-    track('photo', { from: btn && btn.id === 'shoot' ? 'finale' : 'pashlo', cast: PHOTO.cast });
     var P = T().photo;
-    lastFocus = btn; quiz.hidden = false; document.body.style.overflow = 'hidden'; dock.style.visibility = 'hidden';
-    $('quiz-kicker').textContent = "NIKO'S PHOTO"; quizFaceSet('wink');
-    quizBody.textContent = '';
-    var share = el('button', { type: 'button', cls: 'ghost', text: P.share }), close = el('button', { type: 'button', cls: 'ghost', text: P.close });
-    var view = el('img', { cls: 'card-view big', src: PHOTO.url, alt: P.card });
-    [el('h2', { id: 'quiz-title', text: P.title }), view, el('p', { cls: 'photo-note', text: PHOTO.cast >= PHOTO.of ? P.full : fmt(P.more, { n: PHOTO.of - PHOTO.cast }) }), el('div', { cls: 'row' }, [share, close]), el('p', { cls: 'card-hint', text: T().quiz.hint })].forEach(function (n) { quizBody.appendChild(n); });
-    close.addEventListener('click', quizClose);
-    share.addEventListener('click', function () { track('share', { kind: 'photo', cast: PHOTO.cast }); shareCard(PHOTO.blob, 'tetra-niko-photo.png', P.shareText, location.origin + location.pathname + '?src=share', function () {}); });
-    $('quiz-x').focus();
+    track('photo', { from: btn && btn.id === 'shoot' ? 'finale' : 'pashlo', cast: PHOTO.cast, rare: PHOTO.rare ? 1 : 0 });
+    cardOpen(btn, { kicker: PHOTO.rare ? '★ RARE PHOTO ★' : "NIKO'S PHOTO", face: PHOTO.rare ? 'happy' : 'wink', title: PHOTO.rare ? P.rareTitle : P.title, url: PHOTO.url, blob: PHOTO.blob, alt: P.card,
+      note: PHOTO.rare ? P.rareNote : PHOTO.cast >= PHOTO.of ? P.full : fmt(P.more, { n: PHOTO.of - PHOTO.cast }), share: P.share, file: 'tetra-niko-photo.png', text: P.shareText, track: { kind: 'photo', cast: PHOTO.cast } });
+    if (PHOTO.rare) setTimeout(function () { burst(window.innerWidth / 2, window.innerHeight * 0.4, 36); }, 250);
   }
   // 最後の章: その時点で触ったアプリのキャラと撮る。bg に実写 (canvas) を渡すと、その上にニコが写る
   function shootNow(btn, bg) {
     var who = APPS.filter(function (a) { return touched[a.id]; }), fl = el('i', { cls: 'flash' });
     document.body.appendChild(fl); setTimeout(function () { fl.remove(); }, 800);
     return drawPhoto({ lang: document.documentElement.lang, cast: who, bg: bg }).then(function (blob) {
-      PHOTO = { blob: blob, url: URL.createObjectURL(blob), cast: who.length, of: APPS.filter(function (a) { return DEMOS[a.id]; }).length };
+      PHOTO = { blob: blob, url: URL.createObjectURL(blob), cast: who.length, of: APPS.filter(function (a) { return DEMOS[a.id]; }).length, rare: lastRare };
       photoOpen(btn);
     }).catch(function (e) { if (window.console) console.warn('photo', e); if (bg) return shootNow(btn); });   // 実写でうまくいかなければ、実写なしで撮る
   }
@@ -1514,7 +1667,21 @@
     else fallback();
   }
   // 持って帰る 1 枚 (1080x1920)。白いふちの写真に、ニコと、触ったアプリのキャラが写る。pick を渡すと診断結果になる
+  // カードの地 (夜空)
+  function cardBg(x, tint) {
+    var g = x.createLinearGradient(0, 0, 0, 1920); g.addColorStop(0, '#0F2350'); g.addColorStop(0.55, '#070C1C'); g.addColorStop(1, '#04070F'); x.fillStyle = g; x.fillRect(0, 0, 1080, 1920);
+    [[160, 260, 760, 'rgba(47,107,255,.55)'], [980, 620, 640, 'rgba(79,179,255,.45)'], [240, 1500, 760, tint || 'rgba(79,179,255,.3)'], [900, 1750, 520, 'rgba(79,179,255,.35)']].forEach(function (b) {
+      var rg = x.createRadialGradient(b[0], b[1], 0, b[0], b[1], b[2]); rg.addColorStop(0, b[3]); rg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = rg; x.fillRect(0, 0, 1080, 1920);
+    });
+    x.fillStyle = '#fff'; for (var i = 0; i < 150; i++) { x.globalAlpha = 0.25 + Math.random() * 0.7; x.beginPath(); x.arc(Math.random() * 1080, Math.random() * 1920, Math.random() * 2.4 + 0.6, 0, 6.283); x.fill(); }
+    x.globalAlpha = 1; x.textBaseline = 'alphabetic';
+  }
+  function tri(x, cx, cy, r) { x.beginPath(); x.moveTo(cx, cy - r); x.lineTo(cx + r * 0.95, cy + r * 0.78); x.lineTo(cx - r * 0.95, cy + r * 0.78); x.closePath(); }
+  // 写真のふちは曜日で変わる [スタンプの字, 紙の色, スタンプの色]。20 回に 1 回、光るレアが出る (?rare=1 で必ず出る)
+  var DAYS = [['SUN', '#FFF3EC', '#F0643C'], ['MON', '#F1F6FF', '#3D7BFF'], ['TUE', '#FFF1F5', '#F0508E'], ['WED', '#EFFBF4', '#1FA870'], ['THU', '#FBF6E6', '#C98A12'], ['FRI', '#F5F1FF', '#8A63F2'], ['SAT', '#ECF8FF', '#1F9BE0']];
+  var lastRare = false;
   function drawPhoto(o) {
+    var rare = lastRare = !o.pick && (/[?&]rare=1/.test(location.search) || Math.random() < 0.05), day = DAYS[new Date().getDay()], i;
     var lang = o.lang, q = TEXT[lang].quiz, P = TEXT[lang].photo, pick = o.pick, cast = (o.cast || []).slice(0, 4), th = ((pick || cast[cast.length - 1] || {}).theme) || {};
     var jp = '"Zen Maru Gothic", "Hiragino Maru Gothic ProN", sans-serif', en = '"Outfit", ' + jp, body = lang === 'ja' ? jp : en;
     var title = pick ? q.cardTitle : P.card;
@@ -1522,17 +1689,18 @@
     var quiet = function (src) { return load(src).catch(function () { return null; }); };
     return Promise.all([load(NIKO.dir + 'card.webp'), pick ? quiet(pick.icon) : null, Promise.all(cast.map(function (a) { return quiet(a.mascot); })), fonts]).then(function (r) {
       var c = document.createElement('canvas'); c.width = 1080; c.height = 1920; var x = c.getContext('2d');
-      var g = x.createLinearGradient(0, 0, 0, 1920); g.addColorStop(0, '#0F2350'); g.addColorStop(0.55, '#070C1C'); g.addColorStop(1, '#04070F'); x.fillStyle = g; x.fillRect(0, 0, 1080, 1920);
-      [[160, 260, 760, 'rgba(47,107,255,.55)'], [980, 620, 640, 'rgba(79,179,255,.45)'], [240, 1500, 760, th.tint || 'rgba(79,179,255,.3)'], [900, 1750, 520, 'rgba(79,179,255,.35)']].forEach(function (b) {
-        var rg = x.createRadialGradient(b[0], b[1], 0, b[0], b[1], b[2]); rg.addColorStop(0, b[3]); rg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = rg; x.fillRect(0, 0, 1080, 1920);
-      });
-      x.fillStyle = '#fff'; for (var i = 0; i < 150; i++) { x.globalAlpha = 0.25 + Math.random() * 0.7; x.beginPath(); x.arc(Math.random() * 1080, Math.random() * 1920, Math.random() * 2.4 + 0.6, 0, 6.283); x.fill(); }
-      x.globalAlpha = 1; x.textBaseline = 'alphabetic';
+      cardBg(x, th.tint);
       x.fillStyle = '#4FB3FF'; x.font = '800 36px ' + en; x.fillText('T E T R A   N I K O', 90, 170);
       x.fillStyle = '#fff'; x.font = '900 72px ' + body; x.fillText(title, 90, 268);
       // 写真 (少し傾ける)
       x.save(); x.translate(540, 990); x.rotate(pick ? -0.03 : (Math.random() - 0.5) * 0.09);
-      x.save(); x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 70; x.shadowOffsetY = 30; rr(x, -430, -620, 860, 1240, 26); x.fillStyle = '#FBFAF6'; x.fill(); x.restore();
+      x.save(); x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 70; x.shadowOffsetY = 30; rr(x, -430, -620, 860, 1240, 26); x.fillStyle = pick ? '#FBFAF6' : day[1]; x.fill(); x.restore();
+      if (rare) {                                              // レア: 虹色に光る紙
+        x.save(); rr(x, -430, -620, 860, 1240, 26); x.clip();
+        var hg = x.createLinearGradient(-430, -620, 430, 620); ['#FFD0E4', '#FFF1B8', '#C4F6DA', '#B9E3FF', '#DAC8FF', '#FFD0E4'].forEach(function (c, k) { hg.addColorStop(k / 5, c); }); x.fillStyle = hg; x.fillRect(-430, -620, 860, 1240);
+        x.rotate(-0.6); x.fillStyle = 'rgba(255,255,255,.5)'; [-520, -210, 150, 470].forEach(function (yy, k) { x.fillRect(-900, yy, 1800, k % 2 ? 26 : 70); });
+        x.restore();
+      }
       x.save(); rr(x, -390, -580, 780, 900, 10); x.clip();
       if (o.bg) {
         var bs = Math.max(780 / o.bg.width, 900 / o.bg.height); x.drawImage(o.bg, -o.bg.width * bs / 2, -130 - o.bg.height * bs / 2, o.bg.width * bs, o.bg.height * bs);
@@ -1553,7 +1721,17 @@
       put(0, -255, 318, 250); put(1, 262, 318, 250);           // 手前の 2 人
       }
       if (pick && r[1]) { x.save(); rr(x, -360, -550, 150, 150, 38); x.clip(); x.drawImage(r[1], -360, -550, 150, 150); x.restore(); }
+      if (rare) { for (i = 0; i < 18; i++) { var gx = -370 + Math.random() * 740, gy = -560 + Math.random() * 860; if (Math.abs(gx) < 250 && gy > -420 && gy < 250) gx = gx < 0 ? -310 - Math.random() * 60 : 310 + Math.random() * 60; x.globalAlpha = 0.75 + Math.random() * 0.25; x.fillStyle = i % 3 ? '#FFD34D' : '#FFFFFF'; tri(x, gx, gy, 12 + Math.random() * 16); x.fill(); } x.globalAlpha = 1; }
       x.restore();
+      if (!pick) {                                             // スタンプ (写真の右上): 曜日。レアは金
+        var ink = rare ? '#C98A12' : day[2];
+        x.save(); x.translate(318, -512); x.rotate(0.2); x.textAlign = 'center';
+        x.fillStyle = 'rgba(255,255,255,.9)'; x.beginPath(); x.arc(0, 0, 70, 0, 6.283); x.fill();
+        x.strokeStyle = ink; x.lineWidth = 6; x.beginPath(); x.arc(0, 0, 66, 0, 6.283); x.stroke(); x.lineWidth = 2; x.beginPath(); x.arc(0, 0, 55, 0, 6.283); x.stroke();
+        x.fillStyle = ink; tri(x, 0, -27, 13); x.fill();
+        x.font = '800 ' + (rare ? 31 : 36) + 'px ' + en; x.fillText(rare ? 'RARE' : day[0], 0, 24);
+        x.restore();
+      }
       x.fillStyle = '#1B1A2E'; x.textAlign = 'center';
       if (pick) {
         x.fillStyle = '#6B6890'; x.font = '700 38px ' + body; x.fillText(q.cardLead, 0, 410);
@@ -1561,7 +1739,7 @@
       } else {
         var now = new Date(), two = function (n) { return (n < 10 ? '0' : '') + n; };
         x.font = '900 82px ' + body; x.fillText(P.cheese, 0, 445);
-        x.fillStyle = '#6B6890'; x.font = '700 38px ' + en; x.fillText(now.getFullYear() + '.' + two(now.getMonth() + 1) + '.' + two(now.getDate()) + '  ·  tetra2585', 0, 540);
+        x.fillStyle = '#6B6890'; x.font = '700 38px ' + en; x.fillText((rare ? '★ RARE  ·  ' : '') + now.getFullYear() + '.' + two(now.getMonth() + 1) + '.' + two(now.getDate()) + '  ·  tetra2585', 0, 540);
       }
       x.restore();
       x.textAlign = 'left'; x.fillStyle = '#F2F8FF'; x.font = '700 44px ' + body;
@@ -1582,7 +1760,7 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !quiz.hidden) quizClose(); });
 
   // --- 隠しステージ: タップするほど踊る
-  var danceCv = $('dance'), danceCtx = danceCv.getContext('2d'), danceSheet = null, danceAsked = false, frameAt = 0, energy = 0, steps = 0, dancing = false, lastT = 0;
+  var danceCv = $('dance'), danceCtx = danceCv.getContext('2d'), danceSheet = null, danceAsked = false, frameAt = 0, energy = 0, steps = 0, dancing = false, lastT = 0, taps = [], bestRate = 0;
   function danceLoad() {
     if (danceAsked) return; danceAsked = true;
     load(NIKO.dir + 'dance.webp').then(function (sh) { danceSheet = sh; sprite(danceCtx, sh, NIKO.dance, 0); }).catch(function () { danceAsked = false; });
@@ -1597,6 +1775,8 @@
   }
   function danceTap(e) {
     danceLoad(); steps++; energy = Math.min(60, energy + 9);
+    var nowT = performance.now(); taps.push(nowT); while (taps[0] < nowT - 1000) taps.shift(); bestRate = Math.max(bestRate, taps.length);
+    if (steps === 10) $('score-btn').hidden = false;
     var n = $('steps'); n.textContent = steps; n.classList.remove('hit'); void n.offsetWidth; n.classList.add('hit');
     $('floor').style.setProperty('--lit', '1');
     if (e && e.clientX) burst(e.clientX, e.clientY, 4);
@@ -1607,6 +1787,129 @@
   }
   $('floor').addEventListener('pointerdown', danceTap);
   $('floor').addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); danceTap(); } });
+  // ステージの地 (スポットライトと床)。スコアのカードと動画で使う
+  function stageBg(x, w, h, floor) {
+    var g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#12307A'); g.addColorStop(0.6, '#0A1230'); g.addColorStop(1, '#050812'); x.fillStyle = g; x.fillRect(0, 0, w, h);
+    var cone = x.createLinearGradient(0, 0, 0, floor); cone.addColorStop(0, 'rgba(160,215,255,.34)'); cone.addColorStop(1, 'rgba(79,179,255,.06)');
+    x.fillStyle = cone; x.beginPath(); x.moveTo(w * 0.44, 0); x.lineTo(w * 0.56, 0); x.lineTo(w * 0.9, floor); x.lineTo(w * 0.1, floor); x.closePath(); x.fill();
+    x.save(); x.translate(w / 2, floor); x.scale(1, 0.16); var fg = x.createRadialGradient(0, 0, 0, 0, 0, w * 0.42); fg.addColorStop(0, 'rgba(120,200,255,.75)'); fg.addColorStop(1, 'rgba(79,179,255,0)'); x.fillStyle = fg; x.beginPath(); x.arc(0, 0, w * 0.42, 0, 6.283); x.fill(); x.restore();
+  }
+  function danceFrame(x, f, l, t, h) { var D = NIKO.dance, w = h * D.w / D.h; x.drawImage(danceSheet, (f % D.cols) * D.w, Math.floor(f / D.cols) * D.h, D.w, D.h, l - w / 2, t, w, h); }
+  // スコアのカード (1080x1920)
+  function drawScore() {
+    var lang = document.documentElement.lang, S = TEXT[lang].score, rank = steps >= 200 ? 3 : steps >= 100 ? 2 : steps >= 40 ? 1 : 0;
+    var jp = '"Zen Maru Gothic", "Hiragino Maru Gothic ProN", sans-serif', en = '"Outfit", ' + jp, body = lang === 'ja' ? jp : en;
+    var fonts = document.fonts && document.fonts.load ? Promise.all([document.fonts.load('900 80px "Zen Maru Gothic"', S.card + S.ranks[rank] + S.best), document.fonts.load('800 80px "Outfit"', 'TETRA NIKO STEPS 0123456789')]).catch(function () {}) : Promise.resolve();
+    return Promise.all([danceSheet || load(NIKO.dir + 'dance.webp'), fonts]).then(function (r) {
+      danceSheet = r[0];
+      var c = document.createElement('canvas'); c.width = 1080; c.height = 1920; var x = c.getContext('2d');
+      cardBg(x);
+      x.save(); rr(x, 70, 330, 940, 1130, 40); x.clip(); stageBg(x, 1080, 1460, 1390); x.restore();
+      x.strokeStyle = 'rgba(255,255,255,.22)'; x.lineWidth = 3; rr(x, 70, 330, 940, 1130, 40); x.stroke();
+      danceFrame(x, Math.floor(frameAt), 540, 400, 1010);
+      x.fillStyle = '#4FB3FF'; x.font = '800 36px ' + en; x.fillText('T E T R A   N I K O', 90, 170);
+      x.fillStyle = '#fff'; x.font = '900 72px ' + body; x.fillText(S.card, 90, 268);
+      x.font = '800 190px ' + en; x.fillText(String(steps), 86, 1680); var nw = x.measureText(String(steps)).width;
+      x.fillStyle = '#B7E3FF'; x.font = '800 48px ' + en; x.fillText('STEPS', 86 + nw + 22, 1680);
+      x.textAlign = 'right'; x.fillStyle = '#4FB3FF'; x.font = '900 ' + (lang === 'ja' ? 56 : 50) + 'px ' + body; x.fillText(S.ranks[rank], 994, 1590);
+      x.fillStyle = '#F2F8FF'; x.font = '700 40px ' + body; x.fillText(fmt(S.best, { n: bestRate }), 994, 1672);
+      x.textAlign = 'left'; x.fillStyle = '#fff'; x.font = '800 40px ' + en; x.fillText('tetra2585.github.io/apps', 90, 1850);
+      return new Promise(function (ok, ng) { c.toBlob(function (b) { b ? ok({ blob: b, rank: rank }) : ng(); }, 'image/png'); });
+    });
+  }
+  $('score-btn').addEventListener('click', function () {
+    var btn = this, S = T().score, n = steps; if (btn.disabled) return; btn.disabled = true;
+    drawScore().then(function (o) {
+      track('score', { n: n, rank: o.rank });
+      cardOpen(btn, { kicker: 'DANCE SCORE', face: 'happy', title: S.title, url: URL.createObjectURL(o.blob), blob: o.blob, alt: S.card, note: o.rank >= 3 ? S.top : S.note, share: S.share, file: 'tetra-niko-dance.png', text: fmt(S.shareText, { n: n }), track: { kind: 'score' } });
+    }).catch(function (e) { if (window.console) console.warn('score', e); }).then(function () { btn.disabled = false; });
+  });
+  // ニコと踊る動画 (720x1280・5 秒・音なし)。画面に出している絵をそのまま録る。カメラを入れると、自分の隣でニコが踊る。動画は端末の外に出ない
+  function recOpen(btn) {
+    var R = T().rec;
+    lastFocus = btn; quiz.hidden = false; document.body.style.overflow = 'hidden'; dock.style.visibility = 'hidden';
+    $('quiz-kicker').textContent = 'DANCE WITH NIKO'; quizFaceSet('happy');
+    quizBody.textContent = ''; danceLoad();
+    var cv = el('canvas', { width: '720', height: '1280' }), x = cv.getContext('2d'), video = el('video', { cls: 'src', playsinline: '', muted: '' }), bar = el('i', { cls: 'rec-bar' });
+    var box = el('div', { cls: 'rec' }, [cv, video, bar]), msg = el('p', { cls: 'rec-msg', text: '' });
+    var go = el('button', { type: 'button', cls: 'cta', text: R.go }), cam = el('button', { type: 'button', cls: 'ghost', text: R.cam }), again = el('button', { type: 'button', cls: 'ghost', text: R.again, hidden: '' });
+    [el('h2', { id: 'quiz-title', text: R.title }), box, msg, go, el('div', { cls: 'row' }, [cam, again]), el('p', { cls: 'card-hint', text: R.note })].forEach(function (n) { quizBody.appendChild(n); });
+    video.muted = true;
+    var camOn = false, f = 0, boost = 0, last = performance.now(), state = 'idle', out = null, result = null;
+    var canRec = !!(window.MediaRecorder && cv.captureStream);
+    if (!canRec) { go.hidden = true; msg.textContent = R.noRec; }
+    function alive() { return !quiz.hidden && box.isConnected; }
+    function draw(t) {
+      if (!alive()) return;
+      var dt = Math.min(0.1, (t - last) / 1000); last = t; boost = Math.max(0, boost - 14 * dt); f = (f + (15 + boost) * dt) % NIKO.dance.n;
+      if (camOn && video.videoWidth) {
+        var k = Math.max(720 / video.videoWidth, 1280 / video.videoHeight), w = video.videoWidth * k, h = video.videoHeight * k;
+        x.save(); x.translate(720, 0); x.scale(-1, 1); x.drawImage(video, (720 - w) / 2, (1280 - h) / 2, w, h); x.restore();
+        var sh = x.createLinearGradient(0, 860, 0, 1280); sh.addColorStop(0, 'rgba(7,12,28,0)'); sh.addColorStop(1, 'rgba(7,12,28,.55)'); x.fillStyle = sh; x.fillRect(0, 860, 720, 420);
+        if (danceSheet) danceFrame(x, Math.floor(f), 505, 1240 - 860, 860);
+      } else {
+        stageBg(x, 720, 1280, 1150);
+        if (danceSheet) danceFrame(x, Math.floor(f), 360, 1190 - 1000, 1000);
+      }
+      x.textBaseline = 'alphabetic'; x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = 10;
+      x.fillStyle = '#4FB3FF'; x.font = '800 30px "Outfit", sans-serif'; x.fillText('T E T R A   N I K O', 40, 76);
+      x.fillStyle = '#fff'; x.font = '800 28px "Outfit", sans-serif'; x.fillText('tetra2585.github.io/apps', 40, 1244);
+      x.shadowBlur = 0;
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+    box.addEventListener('pointerdown', function () { boost = Math.min(34, boost + 9); });
+    cam.addEventListener('click', function () {
+      if (camOn || state === 'rec') return;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { msg.textContent = R.camFail; cam.hidden = true; return; }
+      cam.disabled = true; msg.textContent = R.wait;
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false }).then(function (st) {
+        if (!alive()) { st.getTracks().forEach(function (t) { t.stop(); }); return; }
+        camStream = st; video.srcObject = st; var p = video.play(); if (p && p.catch) p.catch(function () {});
+        camOn = true; cam.hidden = true; msg.textContent = '';
+      }).catch(function () { msg.textContent = R.camFail; cam.hidden = true; track('camera', { kind: 'denied' }); });
+    });
+    function finish(blob) {
+      if (!alive()) return;
+      state = 'done'; result = blob; bar.className = 'rec-bar';
+      out = el('video', { cls: 'out', playsinline: '', muted: '', loop: '', autoplay: '', src: URL.createObjectURL(blob) }); out.muted = true;
+      cv.hidden = true; box.insertBefore(out, cv); var p = out.play(); if (p && p.catch) p.catch(function () {});
+      msg.textContent = R.done; go.textContent = R.share; go.disabled = false; again.hidden = false;
+      track('video', { kind: camOn ? 'live' : 'none' });
+    }
+    go.addEventListener('click', function () {
+      if (state === 'rec') return;
+      if (state === 'done') {
+        var ext = /mp4/.test(result.type) ? 'mp4' : 'webm', name = 'tetra-niko-dance.' + ext, file = window.File ? new File([result], name, { type: result.type }) : null;
+        track('share', { kind: 'video' });
+        var save = function () { var a = el('a', { href: URL.createObjectURL(result), download: name }); document.body.appendChild(a); a.click(); a.remove(); };
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) navigator.share({ files: [file], text: R.shareText + ' ' + location.origin + location.pathname + '?src=share' }).catch(function (e) { if (!e || e.name !== 'AbortError') save(); });
+        else save();
+        return;
+      }
+      try {
+        var types = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'], mime = MediaRecorder.isTypeSupported ? types.filter(function (m) { return MediaRecorder.isTypeSupported(m); })[0] : '';
+        var rec = new MediaRecorder(cv.captureStream(30), mime ? { mimeType: mime, videoBitsPerSecond: 5000000 } : undefined), chunks = [];
+        rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+        rec.onstop = function () { var b = new Blob(chunks, { type: (rec.mimeType || mime || 'video/mp4').split(';')[0] }); if (b.size) finish(b); else { state = 'idle'; go.disabled = false; msg.textContent = R.noRec; } };
+        rec.onerror = function () { state = 'idle'; go.disabled = false; msg.textContent = R.noRec; };
+        rec.start(); state = 'rec'; go.disabled = true; msg.textContent = R.going; bar.className = 'rec-bar'; void bar.offsetWidth; bar.className = 'rec-bar on';
+        setTimeout(function () { try { if (rec.state !== 'inactive') rec.stop(); } catch (e) {} }, 5000);
+      } catch (e) { if (window.console) console.warn('rec', e); state = 'idle'; go.hidden = true; msg.textContent = R.noRec; }
+    });
+    again.addEventListener('click', function () {
+      if (state !== 'done') return;
+      if (out) { out.pause(); out.remove(); out = null; } cv.hidden = false; result = null; state = 'idle'; again.hidden = true; go.textContent = R.go; msg.textContent = '';
+    });
+    $('quiz-x').focus();
+  }
+  $('rec-btn').addEventListener('click', function () { recOpen(this); });
+  // AR: 開けない端末 (iPhone / iPad 以外) では押せなくして、案内を出す
+  (function () {
+    var sec = $('ar'), probe = document.createElement('a'), ok = !!(probe.relList && probe.relList.supports && probe.relList.supports('ar'));
+    if (!ok) { sec.classList.add('off'); $('ar-off').hidden = false; [].forEach.call(sec.querySelectorAll('a[rel="ar"]'), function (a) { a.setAttribute('tabindex', '-1'); a.setAttribute('aria-disabled', 'true'); a.addEventListener('click', function (e) { e.preventDefault(); }); }); return; }
+    sec.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[rel="ar"]'); if (a) track('ar', { kind: a.getAttribute('data-ar') }); });
+  })();
   showSecrets();
 
   document.querySelectorAll('.lang button').forEach(function (b) {
