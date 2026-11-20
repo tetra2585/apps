@@ -311,6 +311,13 @@
   .follow a::before { content: ""; width: 10px; height: 9px; background: var(--niko); clip-path: polygon(50% 0, 100% 100%, 0 100%); transform: rotate(90deg); }
   .follow a:hover, .follow a:active { background: rgba(79, 179, 255, .2); transform: translateY(-2px); }
   .follow a:focus-visible { outline: 2px solid var(--niko); outline-offset: 3px; }
+  .cam { position: relative; width: min(290px, 72vw); aspect-ratio: 13 / 15; margin: 0 auto; border-radius: 12px; overflow: hidden; background: linear-gradient(180deg, #16286A, #0B1330); border: 6px solid #FBFAF6; box-shadow: 0 16px 40px rgba(0, 0, 0, .5); }
+  .cam canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .cam video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+  .cam .cam-niko { position: absolute; left: 39.7%; bottom: 0; width: 64.1%; height: auto; pointer-events: none; }
+  .cam-msg { position: absolute; left: 0; top: 0; width: 62%; height: 100%; display: grid; place-items: center; padding: 14px; margin: 0; text-align: center; color: var(--text); font-weight: 700; font-size: 13px; line-height: 1.6; }
+  .sheet button.cta { border: 0; font: inherit; font-weight: 900; cursor: pointer; width: 100%; justify-content: center; }
+  .sheet input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
   .photo-note { margin: 10px 0 0; color: var(--sub); font-weight: 700; font-size: 14px; }
   .sheet .card-view.big { width: min(270px, 66vw); }
 
@@ -606,7 +613,7 @@
         lovow: { hint: '約束を1つ選んで、「できた」を押して。', done: '…そういうの、ちゃんと残るんだよ。', title: '今日の約束', promises: ['コーヒーを淹れる', '「ありがとう」を言う', '花を買って帰る'], declared: '宣言した', did: 'できた', memory: 'Memory に残った' },
         pashlo: { hint: '何もしなくていい。アプリが声をかける。', done: '撮れた。写真、タップして見て。', ready: 'はーい、', cheese: 'チーズ！', open: '写真を見る', again: 'もう一度撮る' }
       },
-      photo: { title: '撮れた。', cheese: 'はい、チーズ！', card: 'テトラニコと撮った1枚', more: 'アプリをあと{n}つ触ると、全員そろう。', full: '全員そろった。', share: '写真をシェア', close: '閉じる', shareText: 'テトラニコと写真を撮った' },
+      photo: { title: '撮れた。', cheese: 'はい、チーズ！', card: 'テトラニコと撮った1枚', more: 'アプリをあと{n}つ触ると、全員そろう。', full: '全員そろった。', share: '写真をシェア', close: '閉じる', shareText: 'テトラニコと写真を撮った', camTitle: 'ニコと並んで撮る？', camNote: '写真はこの端末の中で作る。どこにも送らない。', camStart: 'カメラを起動', camSkip: 'カメラなしで撮る', camShoot: '撮る', camWait: 'カメラの準備中…', camFail: 'カメラを使えなかった。下のボタンから、端末のカメラで撮れる。', camFile: 'カメラで撮る・写真を選ぶ' },
       finaleTitle: '最後に、1枚撮って帰る？', finaleNote: '触ったアプリのキャラも、いっしょに写る。', shoot: 'ニコと撮る', follow: 'つづきは、動画で。',
       again: 'もう一度やる',
       secrets: 'ひみつ', gyro: 'スマホを傾けて動かす', get: '{name} を見る',
@@ -642,7 +649,7 @@
         lovow: { hint: 'Pick a promise, then press “Done”.', done: '…Things like that stay with you.', title: "Today's promise", promises: ['Make the coffee', 'Say “thank you”', 'Bring home flowers'], declared: 'Promised', did: 'Done', memory: 'Saved as a Memory' },
         pashlo: { hint: 'Do nothing. The app calls it.', done: 'Got it. Tap the photo.', ready: 'Ready…', cheese: 'Say cheese!', open: 'See the photo', again: 'Shoot again' }
       },
-      photo: { title: 'Got it.', cheese: 'Say cheese!', card: 'A photo with Tetra Niko', more: 'Touch {n} more and everyone shows up.', full: 'Everyone made it.', share: 'Share photo', close: 'Close', shareText: 'I took a photo with Tetra Niko' },
+      photo: { title: 'Got it.', cheese: 'Say cheese!', card: 'A photo with Tetra Niko', more: 'Touch {n} more and everyone shows up.', full: 'Everyone made it.', share: 'Share photo', close: 'Close', shareText: 'I took a photo with Tetra Niko', camTitle: 'Take one next to Niko?', camNote: 'The photo is made on this device. Nothing is uploaded.', camStart: 'Start camera', camSkip: 'Shoot without camera', camShoot: 'Shoot', camWait: 'Starting camera…', camFail: "Couldn't use the camera. Use the button below to take one with your device camera.", camFile: 'Take or choose a photo' },
       finaleTitle: 'One photo before you go?', finaleNote: 'The characters from the apps you touched join in.', shoot: 'Take a photo with Niko', follow: 'More in the videos.',
       again: 'Try again',
       secrets: 'Secrets', gyro: 'Tilt your phone to move things', get: 'View {name}',
@@ -1389,7 +1396,7 @@
   var quiz = $('quiz'), quizBody = $('quiz-body'), quizFace = $('quiz-face'), lastFocus = null;
   function quizFaceSet(n) { quizFace.src = NIKO.dir + 'face-' + n + '.webp'; }
   function quizOpen(btn) { track('quiz_open'); $('quiz-kicker').textContent = "NIKO'S PICK"; lastFocus = btn; quiz.hidden = false; document.body.style.overflow = 'hidden'; dock.style.visibility = 'hidden'; quizStep(0, {}); $('quiz-x').focus(); }
-  function quizClose() { quiz.hidden = true; document.body.style.overflow = ''; dock.style.visibility = ''; if (lastFocus) lastFocus.focus(); }
+  function quizClose() { camStop(); quiz.hidden = true; document.body.style.overflow = ''; dock.style.visibility = ''; if (lastFocus) lastFocus.focus(); }
   function quizStep(i, score) {
     var q = T().quiz;
     if (i >= q.q.length) return quizResult(score);
@@ -1440,15 +1447,65 @@
     share.addEventListener('click', function () { track('share', { kind: 'photo', cast: PHOTO.cast }); shareCard(PHOTO.blob, 'tetra-niko-photo.png', P.shareText, location.origin + location.pathname + '?src=share', function () {}); });
     $('quiz-x').focus();
   }
-  // 最後の章: その時点で触ったアプリのキャラと撮る
-  $('shoot').addEventListener('click', function () {
-    var btn = this, who = APPS.filter(function (a) { return touched[a.id]; }), fl = el('i', { cls: 'flash' });
+  // 最後の章: その時点で触ったアプリのキャラと撮る。bg に実写 (canvas) を渡すと、その上にニコが写る
+  function shootNow(btn, bg) {
+    var who = APPS.filter(function (a) { return touched[a.id]; }), fl = el('i', { cls: 'flash' });
     document.body.appendChild(fl); setTimeout(function () { fl.remove(); }, 800);
-    drawPhoto({ lang: document.documentElement.lang, cast: who }).then(function (blob) {
+    return drawPhoto({ lang: document.documentElement.lang, cast: who, bg: bg }).then(function (blob) {
       PHOTO = { blob: blob, url: URL.createObjectURL(blob), cast: who.length, of: APPS.filter(function (a) { return DEMOS[a.id]; }).length };
       photoOpen(btn);
-    }).catch(function () {});
-  });
+    }).catch(function (e) { if (window.console) console.warn('photo', e); if (bg) return shootNow(btn); });   // 実写でうまくいかなければ、実写なしで撮る
+  }
+  // 写真の窓 (780x900 と同じ比) に合わせて切り出す。インカメラは鏡のように左右を返す
+  function grab(src, w, h, mirror) {
+    var c = document.createElement('canvas'); c.width = 1170; c.height = 1350;
+    var x = c.getContext('2d'), k = Math.max(1170 / w, 1350 / h);
+    if (mirror) { x.translate(1170, 0); x.scale(-1, 1); }
+    x.drawImage(src, (1170 - w * k) / 2, (1350 - h * k) / 2, w * k, h * k);
+    return c;
+  }
+  var camStream = null;
+  function camStop() { if (camStream) { camStream.getTracks().forEach(function (t) { t.stop(); }); camStream = null; } }
+  // カメラで、ニコと並んで撮る。カメラが使えない端末 (アプリ内ブラウザなど) では、端末のカメラか写真の選択に切り替える。写真は端末の外に出ない
+  function camOpen(btn) {
+    var P = T().photo;
+    lastFocus = btn; quiz.hidden = false; document.body.style.overflow = 'hidden'; dock.style.visibility = 'hidden';
+    $('quiz-kicker').textContent = "NIKO'S CAMERA"; quizFaceSet('smile');
+    quizBody.textContent = '';
+    var video = el('video', { playsinline: '', muted: '', autoplay: '', hidden: '' }), msg = el('p', { cls: 'cam-msg', text: '' });
+    var box = el('div', { cls: 'cam' }, [video, msg, el('img', { cls: 'cam-niko', src: NIKO.dir + 'card.webp', alt: '' })]);
+    var go = el('button', { type: 'button', cls: 'cta', text: P.camStart }), skip = el('button', { type: 'button', cls: 'ghost', text: P.camSkip });
+    var file = el('input', { type: 'file', accept: 'image/*', capture: 'user', 'aria-hidden': 'true', tabindex: '-1' });
+    [el('h2', { id: 'quiz-title', text: P.camTitle }), box, go, el('div', { cls: 'row' }, [skip]), el('p', { cls: 'card-hint', text: P.camNote }), file].forEach(function (n) { quizBody.appendChild(n); });
+    video.muted = true;
+    var mode = 'ask', busy = false;
+    function fail() { camStop(); mode = 'file'; video.hidden = true; msg.textContent = P.camFail; go.textContent = P.camFile; go.disabled = false; track('camera', { kind: 'denied' }); }
+    go.addEventListener('click', function () {
+      if (busy) return;
+      if (mode === 'file') return file.click();
+      if (mode === 'live') {
+        if (!video.videoWidth) return;
+        busy = true; go.disabled = true; var bg = grab(video, video.videoWidth, video.videoHeight, true); video.replaceWith(bg); camStop(); track('camera', { kind: 'live' }); shootNow(btn, bg);
+        return;
+      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return fail();
+      go.disabled = true; msg.textContent = P.camWait;
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false }).then(function (st) {
+        if (quiz.hidden || !box.isConnected) { st.getTracks().forEach(function (t) { t.stop(); }); return; }
+        camStream = st; video.srcObject = st; video.hidden = false; msg.textContent = '';
+        var p = video.play(); if (p && p.catch) p.catch(function () {});
+        mode = 'live'; go.textContent = P.camShoot; go.disabled = false;
+      }).catch(fail);
+    });
+    file.addEventListener('change', function () {
+      var f = file.files && file.files[0]; if (!f || busy) return;
+      var url = URL.createObjectURL(f);
+      load(url).then(function (im) { busy = true; track('camera', { kind: 'file' }); return shootNow(btn, grab(im, im.naturalWidth, im.naturalHeight, false)); }).catch(function () {}).then(function () { URL.revokeObjectURL(url); });
+    });
+    skip.addEventListener('click', function () { camStop(); track('camera', { kind: 'none' }); shootNow(btn); });
+    $('quiz-x').focus();
+  }
+  $('shoot').addEventListener('click', function () { camOpen(this); });
   // 画像つきでシェアする。できない端末では、長押しで保存してもらう
   function shareCard(blob, name, text, url, fallback) {
     var file = blob && window.File ? new File([blob], name, { type: 'image/png' }) : null;
@@ -1477,14 +1534,24 @@
       x.save(); x.translate(540, 990); x.rotate(pick ? -0.03 : (Math.random() - 0.5) * 0.09);
       x.save(); x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 70; x.shadowOffsetY = 30; rr(x, -430, -620, 860, 1240, 26); x.fillStyle = '#FBFAF6'; x.fill(); x.restore();
       x.save(); rr(x, -390, -580, 780, 900, 10); x.clip();
+      if (o.bg) {
+        var bs = Math.max(780 / o.bg.width, 900 / o.bg.height); x.drawImage(o.bg, -o.bg.width * bs / 2, -130 - o.bg.height * bs / 2, o.bg.width * bs, o.bg.height * bs);
+        var sh = x.createLinearGradient(0, 60, 0, 320); sh.addColorStop(0, 'rgba(7,12,28,0)'); sh.addColorStop(1, 'rgba(7,12,28,.4)'); x.fillStyle = sh; x.fillRect(-390, 60, 780, 260);
+      } else {
       var pg = x.createLinearGradient(0, -580, 0, 320); pg.addColorStop(0, '#2B2163'); pg.addColorStop(1, '#141230'); x.fillStyle = pg; x.fillRect(-390, -580, 780, 900);
       var glow = x.createRadialGradient(0, -220, 0, 0, -220, 640); glow.addColorStop(0, th.glow || 'rgba(79,179,255,.5)'); glow.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = glow; x.fillRect(-390, -580, 780, 900);
       x.fillStyle = '#fff'; for (i = 0; i < 40; i++) { x.globalAlpha = 0.2 + Math.random() * 0.6; x.beginPath(); x.arc(-390 + Math.random() * 780, -580 + Math.random() * 500, Math.random() * 2.2 + 0.6, 0, 6.283); x.fill(); }
       x.globalAlpha = 1;
+      }
       var ms = r[2], put = function (k, cx, by, w) { var m = ms[k]; if (!m) return; var h = w * m.height / m.width; x.drawImage(m, cx - w / 2, by - h, w, h); };
+      if (o.bg) {                                              // 実写のとき: ニコは右に寄り、キャラは左下に小さく並ぶ (人の顔を隠さない)
+        x.drawImage(r[0], -80, 320 - 554, 500, 554);
+        ms.forEach(function (_, k) { put(k, -325 + k * 105, 318, 110); });
+      } else {
       put(2, -265, -40, 210); put(3, 270, -40, 210);           // 3 人目・4 人目はニコの後ろ
       x.drawImage(r[0], -420, 320 - 931, 840, 931);            // ニコ
       put(0, -255, 318, 250); put(1, 262, 318, 250);           // 手前の 2 人
+      }
       if (pick && r[1]) { x.save(); rr(x, -360, -550, 150, 150, 38); x.clip(); x.drawImage(r[1], -360, -550, 150, 150); x.restore(); }
       x.restore();
       x.fillStyle = '#1B1A2E'; x.textAlign = 'center';

@@ -36,6 +36,7 @@
 | `demo` | アプリの体験をやり終えた（アプリごとに 1 回） | `app` |
 | `store` | App Store へのボタンを押した | `app`, `from` = theater / dock / quiz / list |
 | `quiz_open` / `quiz_result` | 診断を開いた / 結果が出た | `app`（結果のみ） |
+| `camera` | 最後の章で撮り方を選んだ | `kind` = live（カメラ）/ file（端末のカメラ・写真）/ none（カメラなし）/ denied（カメラを使えなかった） |
 | `photo` | 写真を開いた | `from` = pashlo / finale, `cast`（写ったキャラの数） |
 | `share` | シェアのボタンを押した | `kind` = quiz / photo |
 | `voice` | ニコの声を再生した | |
@@ -62,7 +63,7 @@
 - **診断**: 3 問でアプリを 1 つ選び、シェア用の縦長カード（1080x1920）を作る。入口はヒーローのボタン。カードは PASHLO で撮れる写真と同じ形（白いふちの写真に、ニコと、触ったアプリのキャラが写る）。シェアされたリンクは `?src=share` になり、App Store のキャンペーンで数えられる。質問と配点は `index.html` の `TEXT.*.quiz`（アプリを足したら配点にも足す）
 - **自己紹介**: ヒーローのすぐ下、アプリ一覧の前に「ニコって、誰？」の章。「声で聞く」を押すと、自己紹介動画の声（英語）に合わせてニコが話し、字幕が出る。文面は `index.html` の `aboutSay` / `aboutFacts` / `aboutSubs`
 - **隠しステージ**: タップするほどニコが踊る。ひみつは 4 つ（ニコを何度もタップ／ページを離れて戻る／踊らせる／4 つのアプリを全部触る）
-- **最後の章**: 「ニコと撮る」で、その時点で触ったアプリのキャラと写真を撮れる。その下に TikTok・YouTube・Instagram へのリンク（`index.html` の `#finale`）
+- **最後の章**: 「ニコと撮る」で、その時点で触ったアプリのキャラと写真を撮れる。カメラを起動すると、自分の隣にニコが写る（`camOpen`）。カメラを使えない端末では、端末のカメラか写真の選択に切り替わる。カメラなしでも撮れる。写真は端末の中で作り、どこにも送らない。その下に TikTok・YouTube・Instagram へのリンク（`index.html` の `#finale`）
 - **見た目**: 色はニコに合わせて紺・水色・白（`:root` の変数）。アプリごとの色は、触れる iPhone の中だけで使う
 - 画像の作り直し: `python3 scripts/build-niko.py`（元の連番は `~/project/Vmodel/tetra_teto/renders` の `tetraniko_intro_v037`、声は `audio/tetraniko_intro.wav`。声の変換は macOS の `afconvert`。コマ番号や大きさを変えたら `index.html` の `NIKO` も合わせる）
 
