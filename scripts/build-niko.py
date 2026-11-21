@@ -108,8 +108,8 @@ def og(renders):
 
 
 # AR (iPhone の AR Quick Look)。USDZ はモデル側で作る (tetra_teto/CLAUDE.md の「AR 用 USDZ」)。ここでは写して、ボタンの絵を作るだけ
-AR_FILES = {"tetra_niko_ar.usdz": "niko-ar.usdz", "tetra_niko_ar_dance.usdz": "niko-ar-dance.usdz"}
-AR_THUMBS = {"static_front.png": "ar-stand.webp", "dance60_front.png": "ar-dance.webp"}  # renders/ar/check の確認用レンダー (白地)
+AR_FILES = {"tetra_niko_ar_v2.usdz": "niko-ar.usdz", "tetra_niko_ar_dance_v2.usdz": "niko-ar-dance.usdz"}
+AR_THUMBS = {"check2/raw/v2_white_full_front.png": "ar-stand.webp", "check2/rawd/d60_full_front.png": "ar-dance.webp"}  # renders/ar の確認用レンダー (単色の地)
 AR_THUMB_SIZE = (480, 640)
 
 
@@ -121,23 +121,26 @@ def ar(renders):
     for a, b in AR_FILES.items():
         if (src / a).exists():
             shutil.copyfile(src / a, OUT / b)
-            print(f"{b} ({(OUT / b).stat().st_size // 1024} KB)")
+            print(f"{b} ({(OUT / b).stat().st_size / 1e6:.1f} MB)")
     w, h = AR_THUMB_SIZE
     for a, b in AR_THUMBS.items():
-        if not (src / "check" / a).exists():
+        if not (src / a).exists():
             continue
-        im = Image.open(src / "check" / a).convert("RGB")
-        box = ImageChops.difference(im, Image.new("RGB", im.size, "#FFFFFF")).convert("L").point(lambda v: 255 if v > 12 else 0).getbbox()
+        im = Image.open(src / a).convert("RGB")
+        # 地の色 (左上の 1 点) との差で人物を抜く。地が白でもグレーでも同じ扱いにする
+        mask = ImageChops.difference(im, Image.new("RGB", im.size, im.getpixel((2, 2)))).convert("L").point(lambda v: 255 if v > 10 else 0)
+        box = mask.getbbox()
+        mask = mask.filter(ImageFilter.MinFilter(5)).filter(ImageFilter.GaussianBlur(1))
         k = min(w * 0.86 / (box[2] - box[0]), h * 0.9 / (box[3] - box[1]))
-        fig = im.crop(box).resize((round((box[2] - box[0]) * k), round((box[3] - box[1]) * k)), Image.LANCZOS)
-        page = Image.new("RGB", (w, h), "#FFFFFF")
-        page.paste(fig, ((w - fig.width) // 2, h - fig.height - round(h * 0.05)))
+        size = (round((box[2] - box[0]) * k), round((box[3] - box[1]) * k))
+        fig = im.crop(box).resize(size, Image.LANCZOS)
         back = Image.new("RGB", (w, h))
         d = ImageDraw.Draw(back)
-        for y in range(h):  # 上から下へ、淡い水色。白地のレンダーを乗算で重ねる
+        for y in range(h):  # 上から下へ、淡い水色
             t = y / (h - 1)
             d.line((0, y, w, y), fill=(round(238 - 34 * t), round(246 - 22 * t), round(255 - 6 * t)))
-        ImageChops.multiply(back, page).save(OUT / b, "WEBP", quality=82, method=6)
+        back.paste(fig, ((w - size[0]) // 2, h - size[1] - round(h * 0.05)), mask.crop(box).resize(size, Image.LANCZOS))
+        back.save(OUT / b, "WEBP", quality=84, method=6)
         print(f"{b} ({(OUT / b).stat().st_size // 1024} KB)")
 
 
